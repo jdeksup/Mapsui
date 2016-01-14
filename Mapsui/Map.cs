@@ -5,7 +5,7 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Mapsui is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,7 +13,7 @@
 
 // You should have received a copy of the GNU Lesser General Public License
 // along with Mapsui; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 using System;
 using System.Collections.Generic;
@@ -43,7 +43,7 @@ namespace Mapsui
         {
             BackColor = Color.White;
             Layers = new LayerCollection();
-            Viewport =  new Viewport { Center = { X = double.NaN, Y = double.NaN }, Resolution = double.NaN };
+            Viewport = new Viewport { Center = { X = double.NaN, Y = double.NaN }, Resolution = double.NaN };
         }
 
         public bool Lock
@@ -70,7 +70,7 @@ namespace Mapsui
         public LayerCollection Layers
         {
             get { return _layers; }
-            private set
+            internal set
             {
                 var tempLayers = _layers;
                 if (tempLayers != null)
@@ -128,7 +128,7 @@ namespace Mapsui
         /// <summary>
         /// Map background color (defaults to transparent)
         ///  </summary>
-        public Color BackColor { get; set; } 
+        public Color BackColor { get; set; }
 
         /// <summary>
         /// Gets the extents of the map based on the extents of all the layers in the layers collection
@@ -149,10 +149,10 @@ namespace Mapsui
             }
         }
 
-        public IList<double> Resolutions 
+        public IList<double> Resolutions
         {
-            get 
-            { 
+            get
+            {
                 var baseLayer = Layers.FirstOrDefault(l => l.Enabled && l is ITileLayer) as ITileLayer;
                 if (baseLayer == null || baseLayer.Schema == null) return new List<double>();
                 return baseLayer.Schema.Resolutions.Select(r => r.Value.UnitsPerPixel).ToList();
@@ -160,7 +160,7 @@ namespace Mapsui
         }
 
         /// <summary>
-        /// Disposes 
+        /// Disposes
         /// the map object
         /// </summary>
         public void Dispose()
@@ -175,24 +175,25 @@ namespace Mapsui
         /// DataChanged should be triggered by any data changes of any of the child layers
         /// </summary>
         public event DataChangedEventHandler DataChanged;
+
         public event EventHandler RefreshGraphics;
 
-        void LayersLayerRemoved(ILayer layer)
+        private void LayersLayerRemoved(ILayer layer)
         {
             layer.AbortFetch();
             layer.DataChanged -= LayerDataChanged;
             layer.PropertyChanged -= LayerPropertyChanged;
         }
 
-        void LayersLayerAdded(ILayer layer)
+        private void LayersLayerAdded(ILayer layer)
         {
             layer.DataChanged += LayerDataChanged;
             layer.PropertyChanged += LayerPropertyChanged;
             layer.Transformation = Transformation;
             layer.CRS = CRS;
         }
-        
-        void LayerPropertyChanged(object sender, PropertyChangedEventArgs e)
+
+        private void LayerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(sender, e.PropertyName);
         }
@@ -218,7 +219,7 @@ namespace Mapsui
         {
             OnDataChanged(sender, e);
         }
-        
+
         private void OnDataChanged(object sender, DataChangedEventArgs e)
         {
             if (DataChanged != null)

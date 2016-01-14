@@ -1,11 +1,11 @@
 // Copyright 2008 - Paul den Dulk (Geodan)
-// 
+//
 // This file is part of Mapsui.
 // Mapsui is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Mapsui is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -31,8 +31,11 @@ using Mapsui.Providers;
 using Mapsui.Rendering;
 using Mapsui.Rendering.Xaml;
 using Mapsui.Utilities;
+
 #if !SILVERLIGHT && !WINDOWS_PHONE
+
 using XamlVector = System.Windows.Vector;
+
 #else
 using XamlVector = System.Windows.Point;
 #endif
@@ -55,17 +58,24 @@ namespace Mapsui.UI.Xaml
         private readonly Rectangle _bboxRect;
 
         public event EventHandler ErrorMessageChanged;
+
         public event EventHandler<ViewChangedEventArgs> ViewChanged;
+
         public event EventHandler<MouseInfoEventArgs> MouseInfoOver;
+
         public event EventHandler MouseInfoLeave;
+
         public event EventHandler<MouseInfoEventArgs> MouseInfoUp;
+
         public event EventHandler<FeatureInfoEventArgs> FeatureInfo;
 
         public IRenderer Renderer { get; set; }
         private bool IsInBoxZoomMode { get; set; }
         public IList<ILayer> MouseInfoOverLayers { get; private set; } // This should be on the Map
         public IList<ILayer> MouseInfoUpLayers { get; private set; } // This should be on the Map
+
         public event EventHandler ViewportInitialized;
+
         public bool ZoomToBoxMode { get; set; }
 
         [Obsolete("Map.Viewport instead")]
@@ -90,10 +100,10 @@ namespace Mapsui.UI.Xaml
                 }
 
                 _map = value;
-                
+
                 if (_map != null)
                 {
-                    _map.DataChanged += MapDataChanged; 
+                    _map.DataChanged += MapDataChanged;
                     _map.PropertyChanged += MapPropertyChanged;
                     _map.RefreshGraphics += MapRefreshGraphics;
                     _map.ViewChanged(true);
@@ -109,7 +119,7 @@ namespace Mapsui.UI.Xaml
             RefreshGraphics();
         }
 
-        void MapPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void MapPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (!Dispatcher.CheckAccess()) Dispatcher.BeginInvoke(new Action(() => MapPropertyChanged(sender, e)));
             else
@@ -207,14 +217,13 @@ namespace Mapsui.UI.Xaml
             RenderCanvas.ManipulationCompleted += OnManipulationCompleted;
 #endif
         }
-        
+
         public virtual void OnViewChanged(bool userAction = false)
         {
             if (_map == null) return;
 
             var handler = ViewChanged;
-            if (handler != null)  ViewChanged(this, new ViewChangedEventArgs { Viewport = Map.Viewport, UserAction = userAction });
-           
+            if (handler != null) ViewChanged(this, new ViewChangedEventArgs { Viewport = Map.Viewport, UserAction = userAction });
         }
 
         public void Refresh()
@@ -228,7 +237,6 @@ namespace Mapsui.UI.Xaml
 #if (!SILVERLIGHT && !WINDOWS_PHONE)
             Dispatcher.BeginInvoke(new Action(() =>
             {
-
                 InvalidateVisual();
                 _invalid = true;
             }));
@@ -599,7 +607,7 @@ namespace Mapsui.UI.Xaml
         private void CompositionTargetRendering(object sender, EventArgs e)
         {
             if (!_viewportInitialized) InitializeViewport();
-            if (!_viewportInitialized) return; //stop if the line above failed. 
+            if (!_viewportInitialized) return; //stop if the line above failed.
             if (!_invalid && !DeveloperTools.DeveloperMode) return; //in developermode always render so that fps can be counterd.
 
             if ((Renderer != null) && (_map != null))
@@ -611,6 +619,7 @@ namespace Mapsui.UI.Xaml
         }
 
 #if !SILVERLIGHT
+
         private void DispatcherShutdownStarted(object sender, EventArgs e)
         {
             CompositionTarget.Rendering -= CompositionTargetRendering;
@@ -619,6 +628,7 @@ namespace Mapsui.UI.Xaml
                 _map.Dispose();
             }
         }
+
 #endif
 
         public void ZoomToBox(Geometries.Point beginPoint, Geometries.Point endPoint)
@@ -701,7 +711,7 @@ namespace Mapsui.UI.Xaml
         {
             if (Map.Envelope == null) return;
             if (ActualWidth.IsNanOrZero()) return;
-            Map.Viewport.Resolution = Math.Max(Map.Envelope.Width/ActualWidth, Map.Envelope.Height/ActualHeight);
+            Map.Viewport.Resolution = Math.Max(Map.Envelope.Width / ActualWidth, Map.Envelope.Height / ActualHeight);
             Map.Viewport.Center = Map.Envelope.GetCentroid();
         }
 
@@ -713,6 +723,7 @@ namespace Mapsui.UI.Xaml
         }
 
 #endif
+
         private void OnManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
             var previousX = e.ManipulationOrigin.X;
@@ -741,6 +752,33 @@ namespace Mapsui.UI.Xaml
         {
             Refresh();
         }
+
+        #region MVVM
+
+        public LayerCollection Layers
+        {
+            get { return (LayerCollection)GetValue(LayersProperty); }
+            set { SetValue(LayersProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Layers.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty LayersProperty =
+            DependencyProperty.Register("Layers", typeof(LayerCollection), typeof(MapControl), new UIPropertyMetadata(LayersChanged));
+
+        private static void LayersChanged(object dependencyObject, DependencyPropertyChangedEventArgs args)
+        {
+            var mapControl = dependencyObject as MapControl;
+
+            if (mapControl != null)
+            {
+                mapControl.Map.Layers = (LayerCollection)args.NewValue;
+                mapControl.Map.Layers.LayerAdded += l => mapControl.Refresh();
+                mapControl.ZoomToFullEnvelope();
+                mapControl.Refresh();
+            }
+        }
+
+        #endregion MVVM
     }
 
     public class ViewChangedEventArgs : EventArgs
