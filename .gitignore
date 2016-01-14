@@ -32,3 +32,4 @@ packages/
 .vs/
 
 Release/
+*.suo

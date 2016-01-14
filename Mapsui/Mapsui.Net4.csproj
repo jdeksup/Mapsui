@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D74C052A-C07E-4B37-A898-134218ACA5C9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mapsui</RootNamespace>
+    <AssemblyName>Mapsui</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ExtensionMethods\BoundingBoxExtensions.cs" />
+    <Compile Include="ExtensionMethods\FeatureExtensions.cs" />
+    <Compile Include="ExtensionMethods\GeometryExtensions.cs" />
+    <Compile Include="ExtensionMethods\Net4Extensions.cs" />
+    <Compile Include="Fetcher\FeatureFetcher.cs" />
+    <Compile Include="Fetcher\FetchOnThread.cs" />
+    <Compile Include="Fetcher\FetchStrategy.cs" />
+    <Compile Include="Fetcher\HashSet.cs" />
+    <Compile Include="Fetcher\IAsyncDataFetcher.cs" />
+    <Compile Include="Fetcher\IFetchStrategy.cs" />
+    <Compile Include="Fetcher\TileFetcher.cs" />
+    <Compile Include="Geometries\NotifyingPoint.cs" />
+    <Compile Include="Layers\AnimatedFeatures.cs" />
+    <Compile Include="Layers\AnimatedPointLayer.cs" />
+    <Compile Include="Layers\TmsTileSourceBuilder.cs" />
+    <Compile Include="Projection\BoundingBoxIterator.cs" />
+    <Compile Include="Projection\MinimalTransformation.cs" />
+    <Compile Include="Providers\ArcGIS\CapabilitiesHelper.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISDynamicCapabilities.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISDynamicProvider.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISFeatureInfo.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISIdentify.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISLayer.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISLegend.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISLegendResponse.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGisLegendResponseLayer.cs" />
+    <Compile Include="Providers\ArcGIS\Dynamic\ArcGISLegendResponseLegend.cs" />
+    <Compile Include="Providers\ArcGIS\Extent.cs" />
+    <Compile Include="Providers\ArcGIS\IArcGISCapabilities.cs" />
+    <Compile Include="Providers\ArcGIS\Image\ArcGISImageCapabilities.cs" />
+    <Compile Include="Providers\ArcGIS\Image\ArcGISImageServiceProvider.cs" />
+    <Compile Include="Providers\ArcGIS\Image\Domain.cs" />
+    <Compile Include="Providers\ArcGIS\Image\EditFieldsInfo.cs" />
+    <Compile Include="Providers\ArcGIS\Image\Field.cs" />
+    <Compile Include="Providers\ArcGIS\Image\OwnershipBasedAccessControlForRasters.cs" />
+    <Compile Include="Providers\ArcGIS\Image\RasterFunctionInfo.cs" />
+    <Compile Include="Providers\ArcGIS\Image\RasterTypeInfo.cs" />
+    <Compile Include="Providers\ArcGIS\Image\TimeInfo.cs" />
+    <Compile Include="Providers\ArcGIS\Image\TimeReference.cs" />
+    <Compile Include="Providers\ArcGIS\SpatialReference.cs" />
+    <Compile Include="Providers\ArcGIS\Table.cs" />
+    <Compile Include="Providers\ArcGIS\TileInfo.cs" />
+    <Compile Include="Providers\ArcGIS\TimeInfo.cs" />
+    <Compile Include="Providers\IProjectingProvider.cs" />
+    <Compile Include="Rendering\IRenderGetStrategy.cs" />
+    <Compile Include="IViewport.cs" />
+    <Compile Include="Layers\BaseLayer.cs" />
+    <Compile Include="Layers\IFeatureInfo.cs" />
+    <Compile Include="Layers\ILayer.cs" />
+    <Compile Include="Layers\ImageLayer.cs" />
+    <Compile Include="Layers\MemoryLayer.cs" />
+    <Compile Include="Layers\LabelLayer.cs" />
+    <Compile Include="Layers\Layer.cs" />
+    <Compile Include="Layers\LayerCollection.cs" />
+    <Compile Include="Layers\LayerGroup.cs" />
+    <Compile Include="Layers\RasterizingLayer.cs" />
+    <Compile Include="Layers\TileLayer.cs" />
+    <Compile Include="NotifyingViewport.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Rendering\MinimalRenderGetStrategy.cs" />
+    <Compile Include="Rendering\DefaultRendererFactory.cs" />
+    <Compile Include="Rendering\RenderGetStrategy.cs" />
+    <Compile Include="Rendering\VisibleFeatureIterator.cs" />
+    <Compile Include="Map.cs" />
+    <Compile Include="Projection\GeometryIterator.cs" />
+    <Compile Include="Projection\ITransformation.cs" />
+    <Compile Include="Projection\SphericalMercator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\Feature.cs" />
+    <Compile Include="Providers\Features.cs" />
+    <Compile Include="Providers\IFeature.cs" />
+    <Compile Include="Providers\IFeatures.cs" />
+    <Compile Include="Providers\IProvider.cs" />
+    <Compile Include="Providers\MemoryProvider.cs" />
+    <Compile Include="Providers\TileProvider.cs" />
+    <Compile Include="Rendering\IRenderer.cs" />
+    <Compile Include="Rendering\Label.cs" />
+    <Compile Include="Rendering\LabelCollisionDetection.cs" />
+    <Compile Include="Rendering\RenderExceptions.cs" />
+    <Compile Include="Styles\Bitmap.cs" />
+    <Compile Include="Styles\BitmapRegistry.cs" />
+    <Compile Include="Styles\Brush.cs" />
+    <Compile Include="Styles\Color.cs" />
+    <Compile Include="Styles\FillStyle.cs" />
+    <Compile Include="Styles\Font.cs" />
+    <Compile Include="Styles\IStyle.cs" />
+    <Compile Include="Styles\LabelStyle.cs" />
+    <Compile Include="Styles\Offset.cs" />
+    <Compile Include="Styles\Pen.cs" />
+    <Compile Include="Styles\PenStyle.cs" />
+    <Compile Include="Styles\Size.cs" />
+    <Compile Include="Styles\Style.cs" />
+    <Compile Include="Styles\StyleCollection.cs" />
+    <Compile Include="Styles\SymbolStyle.cs" />
+    <Compile Include="Styles\Thematics\ColorBlend.cs" />
+    <Compile Include="Styles\Thematics\CustomTheme.cs" />
+    <Compile Include="Styles\Thematics\GradientTheme.cs" />
+    <Compile Include="Styles\Thematics\IThemeStyle.cs" />
+    <Compile Include="Styles\Thematics\ThemeStyle.cs" />
+    <Compile Include="Styles\VectorStyle.cs" />
+    <Compile Include="Utilities\Constants.cs" />
+    <Compile Include="Utilities\DeveloperTools.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
+    <Compile Include="Utilities\LeastSquaresTransform.cs" />
+    <Compile Include="Utilities\ProjectionHelper.cs" />
+    <Compile Include="Utilities\Providers.cs" />
+    <Compile Include="Utilities\Version.cs" />
+    <Compile Include="Utilities\ZoomHelper.cs" />
+    <Compile Include="Viewport.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BruTile">
+      <HintPath>..\packages\BruTile.0.12.0\lib\portable-net403+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10\BruTile.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mapsui.Geometries\Mapsui.Geometries.Net4.csproj">
+      <Project>{ee55b62d-ffa2-4c24-a4ad-7a47ace55ce5}</Project>
+      <Name>Mapsui.Geometries.Net4</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
