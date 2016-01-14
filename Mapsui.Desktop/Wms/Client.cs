@@ -21,8 +21,6 @@ namespace Mapsui.Web.Wms
         private XmlNode vendorSpecificCapabilities;
         private XmlNamespaceManager nsmgr;
 
-
-
         /// <summary>
         /// Structure for storing information about a WMS Layer Style
         /// </summary>
@@ -54,8 +52,6 @@ namespace Mapsui.Web.Wms
             public string Title;
         }
 
-
-
         /// <summary>
         /// Structure for storing info on an Online Resource
         /// </summary>
@@ -72,10 +68,8 @@ namespace Mapsui.Web.Wms
             public string Type;
         }
 
-
-
         /// <summary>
-        /// Structure for holding information about a WMS Layer 
+        /// Structure for holding information about a WMS Layer
         /// </summary>
         public struct WmsServerLayer
         {
@@ -130,15 +124,13 @@ namespace Mapsui.Web.Wms
             public string Title;
         }
 
-
-
         /// <summary>
         /// Structure for storing WMS Legend information
         /// </summary>
         public struct WmsStyleLegend
         {
             /// <summary>
-            /// Online resource for legend style 
+            /// Online resource for legend style
             /// </summary>
             public WmsOnlineResource OnlineResource;
 
@@ -147,8 +139,6 @@ namespace Mapsui.Web.Wms
             /// </summary>
             public Size Size;
         }
-
-
 
         private Func<string, Task<Stream>> _getStreamAsync;
         private string[] exceptionFormats;
@@ -200,7 +190,6 @@ namespace Mapsui.Web.Wms
         /// </summary>
         public WmsServerLayer Layer { get; private set; }
 
-
         /// <summary>
         /// Initalizes WMS server and parses the Capabilities request
         /// </summary>
@@ -245,8 +234,8 @@ namespace Mapsui.Web.Wms
             try
             {
                 var webRequest = WebRequest.Create(url);
-                var webResponse = (HttpWebResponse) webRequest.GetResponse();
-                source.SetResult(webResponse.GetResponseStream());             
+                var webResponse = (HttpWebResponse)webRequest.GetResponse();
+                source.SetResult(webResponse.GetResponseStream());
             }
             catch (Exception ex)
             {
@@ -257,14 +246,13 @@ namespace Mapsui.Web.Wms
         }
 
         /// <summary>
-        /// Exposes the capabilitie's VendorSpecificCapabilities as XmlNode object. External modules 
+        /// Exposes the capabilitie's VendorSpecificCapabilities as XmlNode object. External modules
         /// could use this to parse the vendor specific capabilities for their specific purpose.
         /// </summary>
         public XmlNode VendorSpecificCapabilities
         {
             get { return vendorSpecificCapabilities; }
         }
-
 
         /// <summary>
         /// Downloads servicedescription from WMS service
@@ -277,7 +265,7 @@ namespace Mapsui.Web.Wms
                 var doc = new XmlDocument { XmlResolver = null };
 
                 using (var task = _getStreamAsync(url))
-                {                     
+                {
                     using (var stReader = new StreamReader(task.Result))
                     {
                         var r = new XmlTextReader(url, stReader) { XmlResolver = null };
@@ -294,7 +282,6 @@ namespace Mapsui.Web.Wms
                 throw new ApplicationException("Could not download capabilities", ex);
             }
         }
-
 
         /// <summary>
         /// Parses a servicedescription and stores the data in the ServiceDescription property
@@ -322,7 +309,6 @@ namespace Mapsui.Web.Wms
                 ParseServiceDescription(xnService);
             else
                 throw (new ApplicationException("No service tag found!"));
-
 
             if (xnCapability != null)
                 ParseCapability(xnCapability);
@@ -527,10 +513,10 @@ namespace Mapsui.Web.Wms
                     {
                         var crs = (xmlAttributeCollection["CRS"] ?? xmlAttributeCollection["SRS"]).Value;
                         wmsServerLayer.BoundingBoxes[crs] = new BoundingBox(
-                            double.Parse(xmlAttributeCollection["minx"].Value),
-                            double.Parse(xmlAttributeCollection["miny"].Value),
-                            double.Parse(xmlAttributeCollection["maxx"].Value),
-                            double.Parse(xmlAttributeCollection["maxy"].Value));
+                            double.Parse(xmlAttributeCollection["minx"].Value, CultureInfo.InvariantCulture),
+                            double.Parse(xmlAttributeCollection["miny"].Value, CultureInfo.InvariantCulture),
+                            double.Parse(xmlAttributeCollection["maxx"].Value, CultureInfo.InvariantCulture),
+                            double.Parse(xmlAttributeCollection["maxy"].Value, CultureInfo.InvariantCulture));
                     }
                 }
             }
@@ -553,8 +539,8 @@ namespace Mapsui.Web.Wms
                     {
                         wmsServerLayer.Style[i].LegendUrl = new WmsStyleLegend();
                         wmsServerLayer.Style[i].LegendUrl.Size = new Size();
-                        wmsServerLayer.Style[i].LegendUrl.Size.Width = int.Parse(node.Attributes["width"].InnerText);
-                        wmsServerLayer.Style[i].LegendUrl.Size.Height = int.Parse(node.Attributes["height"].InnerText);
+                        wmsServerLayer.Style[i].LegendUrl.Size.Width = int.Parse(node.Attributes["width"].InnerText, CultureInfo.InvariantCulture);
+                        wmsServerLayer.Style[i].LegendUrl.Size.Height = int.Parse(node.Attributes["height"].InnerText, CultureInfo.InvariantCulture);
                         wmsServerLayer.Style[i].LegendUrl.OnlineResource.OnlineResource =
                             node.SelectSingleNode("sm:OnlineResource", nsmgr).Attributes["xlink:href"].InnerText;
                         wmsServerLayer.Style[i].LegendUrl.OnlineResource.Type =
