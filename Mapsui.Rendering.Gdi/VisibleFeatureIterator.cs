@@ -6,7 +6,7 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Mapsui is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -14,7 +14,7 @@
 
 // You should have received a copy of the GNU Lesser General Public License
 // along with Mapsui; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 using System;
 using System.Collections.Generic;
@@ -27,19 +27,31 @@ using Mapsui.Styles.Thematics;
 
 namespace Mapsui.Rendering.Gdi
 {
-    public class VisibleFeatureIterator
+    internal class VisibleFeatureIterator
     {
         public static void IterateLayers(Graphics graphics, IViewport viewport, IEnumerable<ILayer> layers,
-            Action<IViewport, IStyle, IFeature> callback)
+            Action<IViewport, IStyle, IFeature, StyleContext> callback)
         {
-            foreach (var layer in layers)
+            using (var styleContext = new StyleContext())
             {
-                IterateLayer(graphics, viewport, layer, callback);
+                foreach (var layer in layers)
+                {
+                    IterateLayer(graphics, viewport, layer, styleContext, callback);
+                }
             }
         }
 
         public static void IterateLayer(Graphics graphics, IViewport viewport, ILayer layer,
-            Action<IViewport, IStyle, IFeature> callback)
+            Action<IViewport, IStyle, IFeature, StyleContext> callback)
+        {
+            using (var styleContext = new StyleContext())
+            {
+                IterateLayer(graphics, viewport, layer, styleContext, callback);
+            }
+        }
+
+        private static void IterateLayer(Graphics graphics, IViewport viewport, ILayer layer, StyleContext context,
+            Action<IViewport, IStyle, IFeature, StyleContext> callback)
         {
             if (layer.Enabled == false) return;
             if (layer.MinVisible > viewport.RenderResolution) return;
@@ -47,16 +59,16 @@ namespace Mapsui.Rendering.Gdi
 
             if (layer is LabelLayer)
             {
-                LabellayerRenderer.Render(graphics, viewport, layer as LabelLayer);
+                LabellayerRenderer.Render(graphics, viewport, layer as LabelLayer, context);
             }
             else
             {
-                IterateVectorLayer(viewport, layer, callback);
+                IterateVectorLayer(viewport, layer, context, callback);
             }
         }
 
-        private static void IterateVectorLayer(IViewport viewport, ILayer layer,
-            Action<IViewport, IStyle, IFeature> callback)
+        private static void IterateVectorLayer(IViewport viewport, ILayer layer, StyleContext context,
+            Action<IViewport, IStyle, IFeature, StyleContext> callback)
         {
             var features = layer.GetFeaturesInView(viewport.Extent, viewport.RenderResolution).ToList();
 
@@ -70,7 +82,7 @@ namespace Mapsui.Rendering.Gdi
                     if (layerStyle is IThemeStyle) style = (layerStyle as IThemeStyle).GetStyle(feature);
                     if ((style == null) || (style.Enabled == false) || (style.MinVisible > viewport.RenderResolution) || (style.MaxVisible < viewport.RenderResolution)) continue;
 
-                    callback(viewport, style, feature);
+                    callback(viewport, style, feature, context);
                 }
             }
 
@@ -81,7 +93,7 @@ namespace Mapsui.Rendering.Gdi
                 {
                     if (feature.Styles != null && featureStyle.Enabled)
                     {
-                        callback(viewport, featureStyle, feature);
+                        callback(viewport, featureStyle, feature, context);
                     }
                 }
             }

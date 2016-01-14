@@ -6,7 +6,7 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Mapsui is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -14,7 +14,7 @@
 
 // You should have received a copy of the GNU Lesser General Public License
 // along with Mapsui; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 using System;
 using System.Drawing;
@@ -25,9 +25,9 @@ using Point = Mapsui.Geometries.Point;
 
 namespace Mapsui.Rendering.Gdi
 {
-    static class PointRenderer
+    internal static class PointRenderer
     {
-        public static void Render(Graphics graphics, Point point, IStyle style, IViewport viewport)
+        public static void Render(Graphics graphics, Point point, IStyle style, IViewport viewport, StyleContext context)
         {
             if (point == null) return;
             if (style == null) return;
@@ -35,7 +35,7 @@ namespace Mapsui.Rendering.Gdi
             var symbolStyle = style as SymbolStyle;
             if ((symbolStyle == null) || (symbolStyle.BitmapId < 0))
             {
-                RenderVectorPoint(graphics, point, style, viewport);
+                RenderVectorPoint(graphics, point, style, viewport, context);
             }
             else
             {
@@ -63,7 +63,7 @@ namespace Mapsui.Rendering.Gdi
             graphics.ResetTransform();
         }
 
-        private static void RenderVectorPoint(Graphics graphics, Point point, IStyle style, IViewport viewport)
+        private static void RenderVectorPoint(Graphics graphics, Point point, IStyle style, IViewport viewport, StyleContext context)
         {
             var symbolStyle = ToSymbolStyle(style);
             if (symbolStyle.Fill == null) return;
@@ -81,13 +81,13 @@ namespace Mapsui.Rendering.Gdi
             graphics.TranslateTransform(offset.X, -offset.Y);
             graphics.TranslateTransform((int)(-width / 2.0), (int)(-height / 2.0));
 
-            DrawSymbol(graphics, symbolStyle);
+            DrawSymbol(graphics, symbolStyle, context);
             graphics.ResetTransform();
         }
 
-        private static void DrawSymbol(Graphics graphics, SymbolStyle symbolStyle)
+        private static void DrawSymbol(Graphics graphics, SymbolStyle symbolStyle, StyleContext context)
         {
-            using (var fill = symbolStyle.Fill.ToGdi())
+            using (var fill = symbolStyle.Fill.ToGdi(context))
             {
                 if (symbolStyle.SymbolType == SymbolType.Rectangle)
                 {

@@ -1,11 +1,11 @@
 // Copyright 2010 - Paul den Dulk (Geodan) - Adapted SharpMap for Mapsui.
-// 
+//
 // This file is part of Mapsui.
 // Mapsui is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Mapsui is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,7 +13,7 @@
 
 // You should have received a copy of the GNU Lesser General Public License
 // along with Mapsui; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 using System;
 using System.Collections.Generic;
@@ -31,9 +31,9 @@ using Mapsui.Utilities;
 
 namespace Mapsui.Rendering.Gdi
 {
-    public static class LabellayerRenderer
+    internal static class LabellayerRenderer
     {
-        public static void Render(Graphics graphics, IViewport viewport, LabelLayer labelLayer)
+        public static void Render(Graphics graphics, IViewport viewport, LabelLayer labelLayer, StyleContext styleContext)
         {
             var layerStyles = BaseLayer.GetLayerStyles(labelLayer);
             foreach (var layerStyle in layerStyles)
@@ -88,13 +88,13 @@ namespace Mapsui.Rendering.Gdi
                                 {
                                     foreach (var geometry in geometryCollection)
                                     {
-                                        var label = CreateLabel(geometry, text, rotation, priority, style, viewport, graphics);
+                                        var label = CreateLabel(geometry, text, rotation, priority, style, viewport, graphics, styleContext);
                                         if (label != null) labels.Add(label);
                                     }
                                 }
                                 else if (labelLayer.MultipartGeometryBehaviour == LabelLayer.MultipartGeometryBehaviourEnum.CommonCenter)
                                 {
-                                    var label = CreateLabel(feature.Geometry, text, rotation, priority, style, viewport, graphics);
+                                    var label = CreateLabel(feature.Geometry, text, rotation, priority, style, viewport, graphics, styleContext);
                                     if (label != null) labels.Add(label);
                                 }
                                 else if (labelLayer.MultipartGeometryBehaviour == LabelLayer.MultipartGeometryBehaviourEnum.First)
@@ -102,7 +102,7 @@ namespace Mapsui.Rendering.Gdi
                                     if ((feature.Geometry as GeometryCollection).Collection.Count > 0)
                                     {
                                         Label label = CreateLabel(geometryCollection.Collection[0], text, rotation, 0,
-                                            style, viewport, graphics);
+                                            style, viewport, graphics, styleContext);
                                         if (label != null) labels.Add(label);
                                     }
                                 }
@@ -139,14 +139,14 @@ namespace Mapsui.Rendering.Gdi
                                         }
 
                                         var label = CreateLabel(coll.Geometry(idxOfLargest), text, rotation, priority, style,
-                                                                viewport, graphics);
+                                                                viewport, graphics, styleContext);
                                         if (label != null) labels.Add(label);
                                     }
                                 }
                             }
                             else
                             {
-                                var label = CreateLabel(feature.Geometry, text, rotation, priority, style, viewport, graphics);
+                                var label = CreateLabel(feature.Geometry, text, rotation, priority, style, viewport, graphics, styleContext);
                                 if (label != null) labels.Add(label);
                             }
                         }
@@ -160,7 +160,7 @@ namespace Mapsui.Rendering.Gdi
                         {
                             if (!label.Show) continue;
                             LabelRenderer.DrawLabel(graphics, label.LabelPoint, label.Style.Offset, label.Style.Font,
-                                label.Style.ForeColor, label.Style.BackColor, label.Halo, label.Rotation, label.Text, viewport);
+                                label.Style.ForeColor, label.Style.BackColor, label.Halo, label.Rotation, label.Text, viewport, styleContext);
                         }
                     }
                 }
@@ -168,9 +168,9 @@ namespace Mapsui.Rendering.Gdi
         }
 
         private static Label CreateLabel(IGeometry feature, string text, float rotation, int priority, LabelStyle style, IViewport viewport,
-                                  Graphics g)
+                                  Graphics g, StyleContext context)
         {
-            var gdiSize = g.MeasureString(text, style.Font.ToGdi());
+            var gdiSize = g.MeasureString(text, style.Font.ToGdi(context));
             var size = new Styles.Size { Width = gdiSize.Width, Height = gdiSize.Height };
 
             var position = viewport.WorldToScreen(feature.GetBoundingBox().GetCentroid());
@@ -228,7 +228,7 @@ namespace Mapsui.Rendering.Gdi
                 label.Rotation = 90;
             else
             {
-                // calculate angle of line					
+                // calculate angle of line
                 double angle = -Math.Atan(dy / dx) + Math.PI * 0.5;
                 angle *= (180d / Math.PI); // convert radians to degrees
                 label.Rotation = (float)angle - 90; // -90 text orientation
@@ -237,7 +237,5 @@ namespace Mapsui.Rendering.Gdi
             double tmpy = line.Vertices[midPoint].Y + (dy * 0.5);
             label.LabelPoint = viewportTransform.WorldToScreen(new Geometries.Point(tmpx, tmpy));
         }
-
-
     }
 }
