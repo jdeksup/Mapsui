@@ -41,7 +41,7 @@ namespace Mapsui.Rendering.Gdi
             DefaultRendererFactory.Create = () => new MapRenderer();
         }
 
-        public bool BestQuality
+        public bool HighQuality
         {
             get;
             set;
@@ -65,7 +65,7 @@ namespace Mapsui.Rendering.Gdi
             var image = new System.Drawing.Bitmap((int)viewport.Width, (int)viewport.Height, PixelFormat.Format32bppArgb);
             var graphics = Graphics.FromImage(image);
             graphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, image.Width, image.Height);
-            if (BestQuality)
+            if (HighQuality)
                 graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             graphics.PageUnit = GraphicsUnit.Pixel;
             Render(graphics, viewport, layers);

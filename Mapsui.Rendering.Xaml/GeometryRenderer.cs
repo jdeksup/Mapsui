@@ -43,7 +43,7 @@ namespace Mapsui.Rendering.Xaml
                 var symbolStyle = style as SymbolStyle;
 
                 if (symbolStyle.BitmapId < 0)
-                    symbol = CreateSymbolFromVectorStyle(symbolStyle, symbolStyle.Opacity, symbolStyle.SymbolType);
+                    symbol = CreateSymbolFromVectorStyle(symbolStyle, symbolStyle.Opacity, symbolStyle.SymbolType, symbolStyle.Width, symbolStyle.Height);
                 else
                     symbol = CreateSymbolFromBitmap(BitmapRegistry.Instance.Get(symbolStyle.BitmapId), symbolStyle.Opacity);
                 matrix = CreatePointSymbolMatrix(viewport.Resolution, symbolStyle);
@@ -62,7 +62,7 @@ namespace Mapsui.Rendering.Xaml
             return symbol;
         }
 
-        private static XamlShapes.Shape CreateSymbolFromVectorStyle(VectorStyle style, double opacity = 1, SymbolType symbolType = SymbolType.Ellipse)
+        private static XamlShapes.Shape CreateSymbolFromVectorStyle(VectorStyle style, double opacity = 1, SymbolType symbolType = SymbolType.Ellipse, double width = SymbolStyle.DefaultWidth, double height = SymbolStyle.DefaultHeight)
         {
             var path = new XamlShapes.Path { StrokeThickness = 0 };  //The SL StrokeThickness default is 1 which causes blurry bitmaps
 
@@ -79,9 +79,9 @@ namespace Mapsui.Rendering.Xaml
             }
 
             if (symbolType == SymbolType.Ellipse)
-                path.Data = CreateEllipse(SymbolStyle.DefaultWidth, SymbolStyle.DefaultHeight);
+                path.Data = CreateEllipse(width, height);
             else
-                path.Data = CreateRectangle(SymbolStyle.DefaultWidth, SymbolStyle.DefaultHeight);
+                path.Data = CreateRectangle(width, height);
 
             path.Opacity = opacity;
 

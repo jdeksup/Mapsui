@@ -25,6 +25,8 @@ namespace Mapsui.Styles
             SymbolScale = 1f;
             Opacity = 1f;
             BitmapId = -1;
+            Width = DefaultWidth;
+            Height = DefaultHeight;
         }
 
         /// <summary>
@@ -79,7 +81,11 @@ namespace Mapsui.Styles
         public SymbolType SymbolType { get; set; }
 
         public double Opacity { get; set; }
-        
+
+        public double Width { get; set; }
+
+        public double Height { get; set; }
+
         public const double DefaultWidth = 32;
 
         public const double DefaultHeight = 32;

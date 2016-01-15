@@ -77,10 +77,11 @@ namespace Mapsui.Rendering.Gdi
             {
                 var style = layerStyle; // This is the default that could be overridden by an IThemeStyle
 
+                if ((style == null) || (style.Enabled == false) || (style.MinVisible > viewport.RenderResolution) || (style.MaxVisible < viewport.RenderResolution)) continue;
+
                 foreach (var feature in features)
                 {
                     if (layerStyle is IThemeStyle) style = (layerStyle as IThemeStyle).GetStyle(feature);
-                    if ((style == null) || (style.Enabled == false) || (style.MinVisible > viewport.RenderResolution) || (style.MaxVisible < viewport.RenderResolution)) continue;
 
                     callback(viewport, style, feature, context);
                 }
@@ -88,12 +89,14 @@ namespace Mapsui.Rendering.Gdi
 
             foreach (var feature in features)
             {
-                var featureStyles = feature.Styles ?? Enumerable.Empty<IStyle>();
-                foreach (var featureStyle in featureStyles)
+                if (feature.Styles != null)
                 {
-                    if (feature.Styles != null && featureStyle.Enabled)
+                    foreach (var featureStyle in feature.Styles)
                     {
-                        callback(viewport, featureStyle, feature, context);
+                        if (feature.Styles != null && featureStyle.Enabled)
+                        {
+                            callback(viewport, featureStyle, feature, context);
+                        }
                     }
                 }
             }

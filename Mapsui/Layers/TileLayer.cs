@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 
 namespace Mapsui.Layers
 {
@@ -52,7 +53,7 @@ namespace Mapsui.Layers
 
         public TileLayer(Func<ITileSource> tileSourceInitializer) : this()
         {
-            Task.Factory.StartNew(() => TileSource = tileSourceInitializer());
+            Task.Factory.StartNew(() => TileSource = tileSourceInitializer(), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
         }
 
         public TileLayer(ITileSource source = null, int minTiles = 200, int maxTiles = 300, int maxRetries = TileFetcher.DefaultMaxAttempts,

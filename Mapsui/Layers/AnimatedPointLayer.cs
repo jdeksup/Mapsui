@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Mapsui.Layers
 {
@@ -30,7 +31,7 @@ namespace Mapsui.Layers
             {
                 _animatedFeatures.AddFeatures(_dataSource.GetFeaturesInView(_extent, _resolution));
                 OnDataChanged(new DataChangedEventArgs());
-            });
+            }, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
         }
 
         public override BoundingBox Envelope

@@ -437,7 +437,7 @@ namespace Mapsui.UI.Xaml
             _previousMousePosition = e.GetPosition(this);
             _downMousePosition = e.GetPosition(this);
             _mouseDown = true;
-            CaptureMouse();
+            //CaptureMouse();
         }
 
         private void MapControlMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -464,7 +464,7 @@ namespace Mapsui.UI.Xaml
             _mouseDown = false;
 
             _previousMousePosition = new Point();
-            ReleaseMouseCapture();
+            //ReleaseMouseCapture();
         }
 
         private void HandleFeatureInfo(MouseButtonEventArgs e)
@@ -542,7 +542,7 @@ namespace Mapsui.UI.Xaml
 
                 if (feature != null)
                 {
-                    return new MouseInfoEventArgs { LayerName = layer.Name, Feature = feature };
+                    return new MouseInfoEventArgs { Layer = layer, LayerName = layer.Name, Feature = feature };
                 }
             }
             return null;
@@ -749,6 +749,7 @@ namespace Mapsui.UI.Xaml
             LayerName = string.Empty;
         }
 
+        public ILayer Layer { get; set; }
         public string LayerName { get; set; }
         public IFeature Feature { get; set; }
     }

@@ -5,7 +5,7 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Mapsui is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,16 +13,16 @@
 
 // You should have received a copy of the GNU Lesser General Public License
 // along with Mapsui; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-using System.Threading.Tasks;
-using Mapsui.Fetcher;
-using Mapsui.Geometries;
-using Mapsui.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using Mapsui.Fetcher;
+using Mapsui.Geometries;
+using Mapsui.Providers;
 using Mapsui.Utilities;
 
 namespace Mapsui.Layers
@@ -46,9 +46,9 @@ namespace Mapsui.Layers
                 _dataSource = value;
                 OnPropertyChanged("DataSource");
                 OnPropertyChanged("Envelope");
-
             }
         }
+
         public int FetchingPostponedInMilliseconds { get; set; }
 
         /// <summary>
@@ -72,11 +72,15 @@ namespace Mapsui.Layers
             }
         }
 
-        public Layer() : this("Layer") { }
-
-        public Layer(string layername) : base(layername)
+        public Layer()
+            : this("Layer")
         {
-            Cache = new List<IFeature>(); 
+        }
+
+        public Layer(string layername)
+            : base(layername)
+        {
+            Cache = new List<IFeature>();
             FetchingPostponedInMilliseconds = 500;
         }
 
@@ -106,8 +110,8 @@ namespace Mapsui.Layers
             if (StartFetchTimer != null) StartFetchTimer.Dispose();
             StartFetchTimer = new Timer(StartFetchTimerElapsed, null, FetchingPostponedInMilliseconds, int.MaxValue);
         }
-        
-        void StartFetchTimerElapsed(object state)
+
+        private void StartFetchTimerElapsed(object state)
         {
             if (NewExtent == null) return;
             StartNewFetch(NewExtent, NewResolution);
@@ -122,7 +126,7 @@ namespace Mapsui.Layers
             extent = Transform(extent);
 
             var fetcher = new FeatureFetcher(extent, resolution, DataSource, DataArrived);
-            Task.Factory.StartNew(() => fetcher.FetchOnThread(null));
+            Task.Factory.StartNew(() => fetcher.FetchOnThread(null), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
         }
 
         protected void DataArrived(IEnumerable<IFeature> features, object state = null)
@@ -145,7 +149,7 @@ namespace Mapsui.Layers
 
         private BoundingBox Transform(BoundingBox extent)
         {
-            if (ProjectionHelper.NeedsTransform(Transformation, CRS, DataSource.CRS)) 
+            if (ProjectionHelper.NeedsTransform(Transformation, CRS, DataSource.CRS))
                 return Transformation.Transform(CRS, DataSource.CRS, extent.Copy());
             return extent;
         }
@@ -153,7 +157,7 @@ namespace Mapsui.Layers
         private IEnumerable<IFeature> Transform(IEnumerable<IFeature> features)
         {
             if (!ProjectionHelper.NeedsTransform(Transformation, CRS, DataSource.CRS)) return features;
-            
+
             var copiedFeatures = features.Copy().ToList();
             foreach (var feature in copiedFeatures)
             {
