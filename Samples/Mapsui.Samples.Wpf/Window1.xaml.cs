@@ -6,6 +6,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using BruTile.Extensions;
 using BruTile.Predefined;
 using BruTile.Wmts;
@@ -26,18 +27,22 @@ namespace Mapsui.Samples.Wpf
             InitializeComponent();
             MapControl.ErrorMessageChanged += MapErrorMessageChanged;
             MapControl.FeatureInfo += MapControlFeatureInfo;
+
+            KeyDown += OnKeyDown;
+            KeyUp += OnKeyUp;
+
             Fps.SetBinding(TextBlock.TextProperty, new Binding("Fps"));
             Fps.DataContext = MapControl.FpsCounter;
 
             OsmClick(this, null);
         }
 
-        static void MapControlFeatureInfo(object sender, FeatureInfoEventArgs e)
+        private static void MapControlFeatureInfo(object sender, FeatureInfoEventArgs e)
         {
             MessageBox.Show(FeaturesToString(e.FeatureInfo));
         }
 
-        static string FeaturesToString(IEnumerable<KeyValuePair<string, IEnumerable<IFeature>>> featureInfos)
+        private static string FeaturesToString(IEnumerable<KeyValuePair<string, IEnumerable<IFeature>>> featureInfos)
         {
             var result = string.Empty;
 
@@ -61,6 +66,24 @@ namespace Mapsui.Samples.Wpf
         {
             Error.Text = MapControl.ErrorMessage;
             Utilities.AnimateOpacity(ErrorBorder, 0.75, 0, 8000);
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            String keyName = e.Key.ToString().ToLower();
+            if (keyName.Equals("ctrl") || keyName.Equals("leftctrl") || keyName.Equals("rightctrl"))
+            {
+                MapControl.IsInBoxZoomMode = false;
+            }
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            String keyName = e.Key.ToString().ToLower();
+            if (keyName.Equals("ctrl") || keyName.Equals("leftctrl") || keyName.Equals("rightctrl"))
+            {
+                MapControl.IsInBoxZoomMode = true;
+            }
         }
 
         private void OsmClick(object sender, RoutedEventArgs e)
@@ -114,7 +137,7 @@ namespace Mapsui.Samples.Wpf
             var pointLayer = PointLayerSample.CreateRandomPointLayer(CreateRandomPointsProvider());
             pointLayer.Style = new StyleCollection {
                 new SymbolStyle {
-                        SymbolScale = 1, Fill = new Brush(Color.Cyan), 
+                        SymbolScale = 1, Fill = new Brush(Color.Cyan),
                         Outline = { Color = Color.White, Width = 2}}
                 };
             MapControl.Map.Layers.Add(pointLayer);
@@ -151,7 +174,7 @@ namespace Mapsui.Samples.Wpf
         private void GeodanWmsClick(object sender, RoutedEventArgs e)
         {
             MapControl.Map.Layers.Clear();
-            MapControl.Map.Layers.Add(new TileLayer(new GeodanWorldWmsTileSource()) { Name = "WMS called as WMSC"});
+            MapControl.Map.Layers.Add(new TileLayer(new GeodanWorldWmsTileSource()) { Name = "WMS called as WMSC" });
             LayerList.Initialize(MapControl.Map.Layers);
             MapControl.ZoomToFullEnvelope();
             MapControl.Refresh();
@@ -161,8 +184,7 @@ namespace Mapsui.Samples.Wpf
         {
             MapControl.Map.Layers.Clear();
             MapControl.Map.Layers.Add(new TileLayer(
-                    () => TmsTileSourceBuilder.Build("http://geoserver.nl/tiles/tilecache.aspx/1.0.0/worlddark_GM", true))
-                    { Name = "TMS"});
+                    () => TmsTileSourceBuilder.Build("http://geoserver.nl/tiles/tilecache.aspx/1.0.0/worlddark_GM", true)) { Name = "TMS" });
             LayerList.Initialize(MapControl.Map.Layers);
             MapControl.Refresh();
         }
@@ -170,8 +192,7 @@ namespace Mapsui.Samples.Wpf
         private void BingMapsClick(object sender, RoutedEventArgs e)
         {
             MapControl.Map.Layers.Clear();
-            MapControl.Map.Layers.Add(new TileLayer(KnownTileSources.Create(KnownTileSource.BingAerial)) 
-                { Name = "Bing Aerial"});
+            MapControl.Map.Layers.Add(new TileLayer(KnownTileSources.Create(KnownTileSource.BingAerial)) { Name = "Bing Aerial" });
             LayerList.Initialize(MapControl.Map.Layers);
             MapControl.ZoomToFullEnvelope();
             MapControl.Refresh();
@@ -200,7 +221,7 @@ namespace Mapsui.Samples.Wpf
         private void MapTilerClick(object sender, RoutedEventArgs e)
         {
             MapControl.Map.Layers.Clear();
-            MapControl.Map.Layers.Add(new TileLayer(new MapTilerTileSource()){Name = "True Marble in MapTiler"} );
+            MapControl.Map.Layers.Add(new TileLayer(new MapTilerTileSource()) { Name = "True Marble in MapTiler" });
             LayerList.Initialize(MapControl.Map.Layers);
             MapControl.ZoomToFullEnvelope();
             MapControl.Refresh();
@@ -252,7 +273,7 @@ namespace Mapsui.Samples.Wpf
             {
                 var tileSources = WmtsParser.Parse(responseStream);
                 var natura2000 = tileSources.First(t => t.Name.ToLower().Contains("natura2000"));
-                MapControl.Map.Layers.Add(new TileLayer(natura2000) { Name = "Natura 2000"});
+                MapControl.Map.Layers.Add(new TileLayer(natura2000) { Name = "Natura 2000" });
                 MapControl.ZoomToFullEnvelope();
                 MapControl.Refresh();
                 LayerList.Initialize(MapControl.Map.Layers);
@@ -277,4 +298,3 @@ namespace Mapsui.Samples.Wpf
         }
     }
 }
-

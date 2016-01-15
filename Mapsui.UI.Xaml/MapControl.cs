@@ -70,7 +70,7 @@ namespace Mapsui.UI.Xaml
         public event EventHandler<FeatureInfoEventArgs> FeatureInfo;
 
         public IRenderer Renderer { get; set; }
-        private bool IsInBoxZoomMode { get; set; }
+        public bool IsInBoxZoomMode { get; set; }
         public IList<ILayer> MouseInfoOverLayers { get; private set; } // This should be on the Map
         public IList<ILayer> MouseInfoUpLayers { get; private set; } // This should be on the Map
 
