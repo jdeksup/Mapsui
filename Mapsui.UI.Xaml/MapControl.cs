@@ -193,8 +193,6 @@ namespace Mapsui.UI.Xaml
             MouseInfoOverLayers = new List<ILayer>();
             MouseInfoUpLayers = new List<ILayer>();
             Loaded += MapControlLoaded;
-            KeyDown += MapControlKeyDown;
-            KeyUp += MapControlKeyUp;
             MouseLeftButtonDown += MapControlMouseLeftButtonDown;
             MouseLeftButtonUp += MapControlMouseLeftButtonUp;
 #if (!WINDOWS_PHONE) //turn off mouse controls
