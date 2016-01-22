@@ -76,6 +76,8 @@ namespace Mapsui.Layers
             lock (_syncLock)
             {
                 if (double.IsNaN(_resolution) || _resolution <= 0) return;
+                if (_layer.IsFetchingProperty) return;
+
                 var viewport = CreateViewport(_extent, _resolution, _renderResolutionMultiplier, _overscan);
 
                 _currentViewport = viewport;

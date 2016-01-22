@@ -45,6 +45,17 @@ namespace Mapsui.Rendering.Gdi
             return v;
         }
 
+        internal static PointF[] WorldToScreenGDI(LineString linearRing, IViewport viewport)
+        {
+            var v = new PointF[linearRing.Vertices.Count];
+            for (int i = 0; i < linearRing.Vertices.Count; i++)
+            {
+                var point = viewport.WorldToScreen(linearRing.Vertices[i]);
+                v[i] = new PointF((float)point.X, (float)point.Y);
+            }
+            return v;
+        }
+
         internal static Point WorldToScreen(Point point, IViewport viewport)
         {
             return viewport.WorldToScreen(point);

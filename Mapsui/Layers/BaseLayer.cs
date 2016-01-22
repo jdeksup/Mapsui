@@ -45,6 +45,8 @@ namespace Mapsui.Layers
 
         public int Id { get; private set; }
 
+        public virtual bool IsFetchingProperty { get { return false; } }
+
         /// <summary>
         /// Gets or sets an arbitrary object value that can be used to store custom information about this element
         /// </summary>

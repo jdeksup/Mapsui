@@ -900,7 +900,7 @@ namespace Mapsui.Data.Providers
 
                     foreach (var index in objectlist)
                     {
-                        var feature = _dbaseFile.GetFeature(index, features);
+                        var feature = _dbaseFile != null ? _dbaseFile.GetFeature(index, features) : new Feature();
                         feature.Geometry = ReadGeometry(index);
                         if (feature.Geometry == null) continue;
                         if (!feature.Geometry.GetBoundingBox().Intersects(box)) continue;

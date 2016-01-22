@@ -49,6 +49,11 @@ namespace Mapsui.Layers
             }
         }
 
+        public override bool IsFetchingProperty
+        {
+            get { return IsFetching; }
+        }
+
         public int FetchingPostponedInMilliseconds { get; set; }
 
         /// <summary>

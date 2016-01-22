@@ -33,10 +33,10 @@ namespace Mapsui.Rendering.Gdi
             var gp = new GraphicsPath();
 
             //Add the exterior polygon
-            gp.AddPolygon(GeometryRenderer.ConvertPoints(GeometryRenderer.WorldToScreen(pol.ExteriorRing, viewport)));
+            gp.AddPolygon(GeometryRenderer.WorldToScreenGDI(pol.ExteriorRing, viewport));
             //Add the interior polygons (holes)
             foreach (LinearRing linearRing in pol.InteriorRings)
-                gp.AddPolygon(GeometryRenderer.ConvertPoints(GeometryRenderer.WorldToScreen(linearRing, viewport)));
+                gp.AddPolygon(GeometryRenderer.WorldToScreenGDI(linearRing, viewport));
 
             // Only render inside of polygon if the brush isn't null or isn't transparent
             if (brush != null && brush != Brushes.Transparent)

@@ -28,7 +28,7 @@ namespace Mapsui.Rendering.Gdi
         {
             if (line.Vertices.Count > 1)
             {
-                graphics.DrawLines(pen, GeometryRenderer.ConvertPoints(GeometryRenderer.WorldToScreen(line, viewport)));
+                graphics.DrawLines(pen,GeometryRenderer.WorldToScreenGDI(line, viewport));
             }
         }
     }
