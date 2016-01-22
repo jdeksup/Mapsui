@@ -12,17 +12,27 @@ namespace Mapsui.Samples.Common.Desktop
 {
     public static class ShapefileSample
     {
-        public static IEnumerable<ILayer> CreateLayers()
+        public static IEnumerable<ILayer> CreateLayers(string fileName)
         {
             var layers = new List<ILayer>();
 
-            var countrySource = new ShapeFile(GetAppDir() + "\\GeoData\\World\\countries.shp", true) { CRS = "EPSG:3785" };
-            var citySource = new ShapeFile(GetAppDir() + "\\GeoData\\World\\cities.shp", true) { CRS = "EPSG:3785" };
+            //var countrySource = new ShapeFile(GetAppDir() + "\\GeoData\\World\\countries.shp", true) { CRS = "EPSG:3785" };
+            //var citySource = new ShapeFile(GetAppDir() + "\\GeoData\\World\\cities.shp", true) { CRS = "EPSG:3785" };
 
-            layers.Add(new RasterizingLayer(CreateCountryLayer(countrySource)));
-            layers.Add(new RasterizingLayer(CreateCityLayer(citySource)));
-            layers.Add(new RasterizingLayer(CreateCountryLabelLayer(countrySource)));
-            layers.Add(new RasterizingLayer(CreateCityLabelLayer(citySource)));
+            //layers.Add(new RasterizingLayer(CreateCountryLayer(countrySource)));
+            //layers.Add(new RasterizingLayer(CreateCityLayer(citySource)));
+            //layers.Add(new RasterizingLayer(CreateCountryLabelLayer(countrySource)));
+            //layers.Add(new RasterizingLayer(CreateCityLabelLayer(citySource)));
+
+            var source = new ShapeFile(fileName, false) { CRS = "EPSG:3785" };
+
+            layers.Add(new RasterizingLayer(new Layer
+            {
+                Name = "Shapefile",
+                DataSource = source,
+                Style = new ThemeStyle(f => new VectorStyle { Line = new Pen(Color.Black) }),
+                FetchingPostponedInMilliseconds = 100
+            }, rasterizer: new Mapsui.Rendering.Gdi.MapRenderer() { HighQuality = true }, delayBeforeRasterize: 300));
 
             return layers;
         }

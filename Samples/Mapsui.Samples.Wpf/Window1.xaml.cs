@@ -17,6 +17,7 @@ using Mapsui.Samples.Common;
 using Mapsui.Samples.Common.Desktop;
 using Mapsui.Styles;
 using Mapsui.UI.Xaml;
+using Microsoft.Win32;
 
 namespace Mapsui.Samples.Wpf
 {
@@ -208,14 +209,19 @@ namespace Mapsui.Samples.Wpf
 
         private void ShapefileClick(object sender, RoutedEventArgs e)
         {
-            MapControl.Map.Layers.Clear();
-            foreach (var layer in ShapefileSample.CreateLayers())
+            var ofd = new OpenFileDialog();
+
+            if (ofd.ShowDialog() ?? false)
             {
-                MapControl.Map.Layers.Add(layer);
+                MapControl.Map.Layers.Clear();
+                foreach (var layer in ShapefileSample.CreateLayers(ofd.FileName))
+                {
+                    MapControl.Map.Layers.Add(layer);
+                }
+                MapControl.ZoomToFullEnvelope();
+                LayerList.Initialize(MapControl.Map.Layers);
+                MapControl.Refresh();
             }
-            MapControl.ZoomToFullEnvelope();
-            LayerList.Initialize(MapControl.Map.Layers);
-            MapControl.Refresh();
         }
 
         private void MapTilerClick(object sender, RoutedEventArgs e)

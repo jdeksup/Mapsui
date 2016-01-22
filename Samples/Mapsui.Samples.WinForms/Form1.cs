@@ -14,9 +14,14 @@ namespace Mapsui.Samples.WinForms
 
         void Form1_Load(object sender, EventArgs e)
         {
-            foreach (var layer in ShapefileSample.CreateLayers())
+            var ofd = new OpenFileDialog();
+
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                mapControl1.Map.Layers.Add(layer);
+                foreach (var layer in ShapefileSample.CreateLayers(ofd.FileName))
+                {
+                    mapControl1.Map.Layers.Add(layer);
+                }
             }
         }
 
