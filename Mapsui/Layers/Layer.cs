@@ -130,8 +130,11 @@ namespace Mapsui.Layers
 
             extent = Transform(extent);
 
-            var fetcher = new FeatureFetcher(extent, resolution, DataSource, DataArrived);
-            Task.Factory.StartNew(() => fetcher.FetchOnThread(null), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+            if (Enabled)
+            {
+                var fetcher = new FeatureFetcher(extent, resolution, DataSource, DataArrived);
+                Task.Factory.StartNew(() => fetcher.FetchOnThread(null), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+            }
         }
 
         protected void DataArrived(IEnumerable<IFeature> features, object state = null)

@@ -214,6 +214,7 @@ namespace Mapsui.Samples.Wpf
             if (ofd.ShowDialog() ?? false)
             {
                 MapControl.Map.Layers.Clear();
+                MapControl.Map.Layers.Add(new TileLayer(KnownTileSources.Create()) { Name = "OSM" });
                 foreach (var layer in ShapefileSample.CreateLayers(ofd.FileName))
                 {
                     MapControl.Map.Layers.Add(layer);
