@@ -153,6 +153,11 @@ namespace Mapsui.Layers
             _layer.ClearCache();
         }
 
+        public ILayer EmbeddedLayer
+        {
+            get { return _layer; }
+        }
+
         private static Viewport CreateViewport(BoundingBox extent, double resolution, double renderResolutionMultiplier, double overscan)
         {
             var renderResolution = resolution / renderResolutionMultiplier;

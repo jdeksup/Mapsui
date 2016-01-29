@@ -163,6 +163,7 @@ namespace Mapsui.UI.Xaml
           DependencyProperty.Register(
           "Resolution", typeof(double), typeof(MapControl),
           new PropertyMetadata(OnResolutionChanged));
+        private bool _mouseMoved;
 
         public MapControl()
         {
@@ -437,6 +438,10 @@ namespace Mapsui.UI.Xaml
             _previousMousePosition = e.GetPosition(this);
             _downMousePosition = e.GetPosition(this);
             _mouseDown = true;
+            _mouseMoved = false;
+
+            if (IsInBoxZoomMode)
+                ZoomToBoxMode = true;
             //CaptureMouse();
         }
 
@@ -445,7 +450,7 @@ namespace Mapsui.UI.Xaml
 #if !SILVERLIGHT
             if (e.StylusDevice != null) return;
 #endif
-            if (IsInBoxZoomMode || ZoomToBoxMode)
+            if (ZoomToBoxMode)
             {
                 ZoomToBoxMode = false;
                 Geometries.Point previous = Map.Viewport.ScreenToWorld(_previousMousePosition.X, _previousMousePosition.Y);
@@ -459,9 +464,13 @@ namespace Mapsui.UI.Xaml
                 OnMouseInfoUp(eventArgs ?? new MouseInfoEventArgs());
             }
 
-            _map.ViewChanged(true);
-            OnViewChanged(true);
-            _mouseDown = false;
+            if (_mouseMoved)
+            {
+                _map.ViewChanged(true);
+                OnViewChanged(true);
+                _mouseDown = false;
+                _mouseMoved = false;
+            }
 
             _previousMousePosition = new Point();
             //ReleaseMouseCapture();
@@ -496,7 +505,7 @@ namespace Mapsui.UI.Xaml
 #if !SILVERLIGHT
             if (e.StylusDevice != null) return;
 #endif
-            if (IsInBoxZoomMode || ZoomToBoxMode)
+            if (ZoomToBoxMode)
             {
                 DrawBbox(e.GetPosition(this));
                 return;
@@ -517,6 +526,7 @@ namespace Mapsui.UI.Xaml
                 _map.ViewChanged(false);
                 OnViewChanged(true);
                 RefreshGraphics();
+                _mouseMoved = true;
             }
         }
 
@@ -535,7 +545,7 @@ namespace Mapsui.UI.Xaml
             foreach (var layer in layers)
             {
                 if (layer == null) continue;
-                var feature = layer.GetFeaturesInView(Map.Envelope, 0)
+                var feature = layer.GetFeaturesInView(Map.Viewport.Extent, 0)
                     .Where(f => f.Geometry.GetBoundingBox().GetCentroid().Distance(point) < margin)
                     .OrderBy(f => f.Geometry.GetBoundingBox().GetCentroid().Distance(point))
                     .FirstOrDefault();

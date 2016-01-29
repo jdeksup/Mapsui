@@ -70,7 +70,14 @@ namespace Mapsui.Rendering.Gdi
         private static void IterateVectorLayer(IViewport viewport, ILayer layer, StyleContext context,
             Action<IViewport, IStyle, IFeature, StyleContext> callback)
         {
-            var features = layer.GetFeaturesInView(viewport.Extent, viewport.RenderResolution).ToList();
+            var features = layer.GetFeaturesInView(viewport.Extent, viewport.RenderResolution)
+                .Where(f =>
+                {
+                    var boundingBox = f.Geometry.GetBoundingBox();
+                    return boundingBox.Height / viewport.Resolution > 0.2 ||
+                        boundingBox.Width / viewport.Resolution > 0.2;
+                })
+            .ToList();
 
             var layerStyles = layer.Style is StyleCollection ? (layer.Style as StyleCollection).ToArray() : new[] { layer.Style };
             foreach (var layerStyle in layerStyles)

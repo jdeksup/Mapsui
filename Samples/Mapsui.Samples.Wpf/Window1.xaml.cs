@@ -255,6 +255,7 @@ namespace Mapsui.Samples.Wpf
         private void WmsClick(object sender, RoutedEventArgs e)
         {
             MapControl.Map.Layers.Clear();
+            MapControl.Map.Layers.Add(new TileLayer(KnownTileSources.Create()) { Name = "OSM" });
             MapControl.Map.Layers.Add(WmsSample.Create());
             LayerList.Initialize(MapControl.Map.Layers);
             MapControl.ZoomToFullEnvelope();
