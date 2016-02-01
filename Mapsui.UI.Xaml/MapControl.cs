@@ -163,6 +163,7 @@ namespace Mapsui.UI.Xaml
           DependencyProperty.Register(
           "Resolution", typeof(double), typeof(MapControl),
           new PropertyMetadata(OnResolutionChanged));
+
         private bool _mouseMoved;
 
         public MapControl()
@@ -238,7 +239,7 @@ namespace Mapsui.UI.Xaml
             {
                 InvalidateVisual();
                 _invalid = true;
-            }));
+            }), System.Windows.Threading.DispatcherPriority.ContextIdle);
 #else
                 InvalidateArrange();
                 _invalid = true;
@@ -620,6 +621,7 @@ namespace Mapsui.UI.Xaml
 
             if ((Renderer != null) && (_map != null))
             {
+                _invalid = false;
                 Renderer.Render(Map.Viewport, _map.Layers);
                 if (DeveloperTools.DeveloperMode) _fpsCounter.FramePlusOne();
                 _invalid = false;

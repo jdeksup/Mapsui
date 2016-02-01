@@ -75,7 +75,7 @@ namespace Mapsui.Rendering.Gdi
 
         private static bool Filter(double range)
         {
-            return Math.Abs(range) >= 0.5;
+            return Math.Abs(range) >= 0.2;
         }
     }
 }

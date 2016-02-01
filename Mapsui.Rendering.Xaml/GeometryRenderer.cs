@@ -4,13 +4,16 @@ using System.Linq;
 using Mapsui.Geometries;
 using Mapsui.Styles;
 using Point = Mapsui.Geometries.Point;
+
 #if !NETFX_CORE
+
 using System.Windows;
 using System.Windows.Media.Imaging;
 using XamlMedia = System.Windows.Media;
 using XamlShapes = System.Windows.Shapes;
 using XamlPoint = System.Windows.Point;
 using XamlColors = System.Windows.Media.Colors;
+
 #else
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -28,7 +31,7 @@ namespace Mapsui.Rendering.Xaml
     ///<remarks>
     /// In this class there are a lot of collistions in class names between Mapsui
     /// and the .net framework libaries I use for Xaml rendering. I resolve this by using
-    /// namespace aliases. I will use 'Xaml' in namespace and method names to refer to 
+    /// namespace aliases. I will use 'Xaml' in namespace and method names to refer to
     /// all .net framework classes related to Xaml, even if they are not.
     /// </remarks>
     public static class GeometryRenderer
@@ -67,7 +70,7 @@ namespace Mapsui.Rendering.Xaml
             var path = new XamlShapes.Path { StrokeThickness = 0 };  //The SL StrokeThickness default is 1 which causes blurry bitmaps
 
             if (style.Fill != null && (style.Fill.Color != null || style.Fill.BitmapId != -1))
-                path.Fill = style.Fill.ToXaml();                
+                path.Fill = style.Fill.ToXaml();
             else
                 path.Fill = new XamlMedia.SolidColorBrush(XamlColors.Transparent);
 
@@ -112,7 +115,7 @@ namespace Mapsui.Rendering.Xaml
             var matrix = XamlMedia.Matrix.Identity;
             var mapCenterX = viewport.Width * 0.5;
             var mapCenterY = viewport.Height * 0.5;
-            
+
             var pointOffsetFromViewPortCenterX = point.X - viewport.Center.X;
             var pointOffsetFromViewPortCenterY = point.Y - viewport.Center.Y;
 
@@ -122,7 +125,6 @@ namespace Mapsui.Rendering.Xaml
             {
                 MatrixHelper.Rotate(ref matrix, -viewport.Rotation);
             }
-
 
             MatrixHelper.Translate(ref matrix, mapCenterX, mapCenterY);
             MatrixHelper.ScaleAt(ref matrix, 1 / viewport.Resolution, 1 / viewport.Resolution, mapCenterX, mapCenterY);
@@ -211,7 +213,7 @@ namespace Mapsui.Rendering.Xaml
             path.IsHitTestVisible = false;
             return path;
         }
-     
+
         private static XamlMedia.Geometry ConvertSymbol(Point point, SymbolStyle style, IViewport viewport)
         {
             Point p = viewport.WorldToScreen(point);
@@ -264,7 +266,7 @@ namespace Mapsui.Rendering.Xaml
             var path = new XamlShapes.Path();
             if (style.Outline != null)
             {
-                //todo: render an outline around the line. 
+                //todo: render an outline around the line.
             }
             path.Stroke = new XamlMedia.SolidColorBrush(style.Line.Color.ToXaml());
             path.StrokeDashArray = style.Outline.PenStyle.ToXaml();
@@ -295,7 +297,7 @@ namespace Mapsui.Rendering.Xaml
 
             var matrixTransform = new XamlMedia.MatrixTransform { Matrix = CreateTransformMatrix1(viewport) };
             path.RenderTransform = matrixTransform;
-            
+
             if (path.Fill != null)
                 path.Fill.Transform = matrixTransform.Inverse as XamlMedia.MatrixTransform;
             path.UseLayoutRounding = true;
@@ -367,6 +369,7 @@ namespace Mapsui.Rendering.Xaml
             bitmapImage.BeginInit();
             bitmapImage.StreamSource = localStream;
             bitmapImage.EndInit();
+            bitmapImage.Freeze();
 #else
             bitmapImage.SetSource(stream);
 #endif
@@ -380,7 +383,7 @@ namespace Mapsui.Rendering.Xaml
 
         public static Rect RoundToPixel(Rect dest)
         {
-            // To get seamless aligning you need to round the 
+            // To get seamless aligning you need to round the
             // corner coordinates to pixel. The new width and
             // height will be a result of that.
             dest = new Rect(
@@ -428,7 +431,7 @@ namespace Mapsui.Rendering.Xaml
         public static void PositionGeometry(XamlShapes.Shape renderedGeometry, IViewport viewport)
         {
             CounterScaleLineWidth(renderedGeometry, viewport.Resolution);
-            var matrixTransform = new XamlMedia.MatrixTransform {Matrix = CreateTransformMatrix1(viewport)};
+            var matrixTransform = new XamlMedia.MatrixTransform { Matrix = CreateTransformMatrix1(viewport) };
             renderedGeometry.RenderTransform = matrixTransform;
 
             if (renderedGeometry.Fill != null)

@@ -74,8 +74,8 @@ namespace Mapsui.Rendering.Gdi
                 .Where(f =>
                 {
                     var boundingBox = f.Geometry.GetBoundingBox();
-                    return boundingBox.Height / viewport.Resolution > 0.2 ||
-                        boundingBox.Width / viewport.Resolution > 0.2;
+                    return boundingBox.Height / viewport.Resolution > 0.1 ||
+                        boundingBox.Width / viewport.Resolution > 0.1;
                 })
             .ToList();
 

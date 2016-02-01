@@ -6,7 +6,7 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // Mapsui is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -14,7 +14,7 @@
 
 // You should have received a copy of the GNU Lesser General Public License
 // along with Mapsui; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -22,7 +22,7 @@ using Mapsui.Geometries;
 
 namespace Mapsui.Rendering.Gdi
 {
-    class PolygonRenderer
+    internal class PolygonRenderer
     {
         public static void DrawPolygon(Graphics graphics, Polygon pol, Brush brush, Pen pen, IViewport viewport)
         {
@@ -33,10 +33,18 @@ namespace Mapsui.Rendering.Gdi
             var gp = new GraphicsPath();
 
             //Add the exterior polygon
-            gp.AddPolygon(GeometryRenderer.WorldToScreenGDI(pol.ExteriorRing, viewport));
+            var points = GeometryRenderer.WorldToScreenGDI(pol.ExteriorRing, viewport);
+            if (points.Length > 2)
+                gp.AddPolygon(points);
             //Add the interior polygons (holes)
             foreach (LinearRing linearRing in pol.InteriorRings)
-                gp.AddPolygon(GeometryRenderer.WorldToScreenGDI(linearRing, viewport));
+            {
+                var interiorPoints = GeometryRenderer.WorldToScreenGDI(linearRing, viewport);
+                if (interiorPoints.Length > 2)
+                    gp.AddPolygon(interiorPoints);
+            }
+
+            if (gp.PointCount == 0) return;
 
             // Only render inside of polygon if the brush isn't null or isn't transparent
             if (brush != null && brush != Brushes.Transparent)
