@@ -8,7 +8,7 @@ namespace Mapsui.Samples.Common.Desktop
         public static ILayer Create()
         {
             var provider = CreateWmsProvider();
-            var layer = new ImageLayer("WmsLayer") {DataSource = provider};
+            var layer = new ImageLayer("WmsLayer") { DataSource = provider };
             return layer;
         }
 
@@ -19,7 +19,7 @@ namespace Mapsui.Samples.Common.Desktop
             var provider = new WmsProvider(wmsUrl)
             {
                 ContinueOnError = true,
-                TimeOut = 20000,
+                TimeOut = 2000,
                 CRS = "EPSG:28992"
             };
 

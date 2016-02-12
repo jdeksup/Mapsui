@@ -707,6 +707,7 @@ namespace Mapsui.UI.Xaml
             if (ActualWidth.IsNanOrZero()) return;
             Map.Viewport.Resolution = Math.Max(Map.Envelope.Width / ActualWidth, Map.Envelope.Height / ActualHeight);
             Map.Viewport.Center = Map.Envelope.GetCentroid();
+            RefreshGraphics();
         }
 
 #if (!SILVERLIGHT && !WINDOWS_PHONE)

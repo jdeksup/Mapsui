@@ -255,7 +255,7 @@ namespace Mapsui.Samples.Wpf
         private void WmsClick(object sender, RoutedEventArgs e)
         {
             MapControl.Map.Layers.Clear();
-            MapControl.Map.Layers.Add(new TileLayer(KnownTileSources.Create()) { Name = "OSM" });
+            //MapControl.Map.Layers.Add(new TileLayer(KnownTileSources.Create()) { Name = "OSM" });
             MapControl.Map.Layers.Add(WmsSample.Create());
             LayerList.Initialize(MapControl.Map.Layers);
             MapControl.ZoomToFullEnvelope();
@@ -274,14 +274,18 @@ namespace Mapsui.Samples.Wpf
         private void WmtsClick(object sender, RoutedEventArgs e)
         {
             MapControl.Map.Layers.Clear();
-            var webRequest = (HttpWebRequest)WebRequest.Create("http://geodata.nationaalgeoregister.nl/wmts/top10nl?VERSION=1.0.0&request=GetCapabilities");
+            //var webRequest = (HttpWebRequest)WebRequest.Create("http://geodata.nationaalgeoregister.nl/wmts/top10nl?VERSION=1.0.0&request=GetCapabilities");
+            var webRequest = (HttpWebRequest)WebRequest.Create("http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_Density/MapServer/WMTS/");
             var webResponse = webRequest.GetSyncResponse(10000);
             if (webResponse == null) throw (new WebException("An error occurred while fetching tile", null));
             using (var responseStream = webResponse.GetResponseStream())
             {
                 var tileSources = WmtsParser.Parse(responseStream);
-                var natura2000 = tileSources.First(t => t.Name.ToLower().Contains("natura2000"));
-                MapControl.Map.Layers.Add(new TileLayer(natura2000) { Name = "Natura 2000" });
+                //var natura2000 = tileSources.First(t => t.Name.ToLower().Contains("natura2000"));
+                //MapControl.Map.Layers.Add(new TileLayer(natura2000) { Name = "Natura 2000" });
+
+                foreach (var layer in tileSources)
+                    MapControl.Map.Layers.Add(new TileLayer(layer) { Name = layer.Name });
                 MapControl.ZoomToFullEnvelope();
                 MapControl.Refresh();
                 LayerList.Initialize(MapControl.Map.Layers);
