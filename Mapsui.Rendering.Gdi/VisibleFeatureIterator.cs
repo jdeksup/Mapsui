@@ -73,6 +73,7 @@ namespace Mapsui.Rendering.Gdi
             var features = layer.GetFeaturesInView(viewport.Extent, viewport.RenderResolution)
                 .Where(f =>
                 {
+                    if (f.Geometry is Mapsui.Geometries.Point) return true;
                     var boundingBox = f.Geometry.GetBoundingBox();
                     return boundingBox.Height / viewport.Resolution > 0.1 ||
                         boundingBox.Width / viewport.Resolution > 0.1;

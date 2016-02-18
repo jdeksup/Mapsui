@@ -73,8 +73,8 @@ namespace Mapsui.Rendering.Gdi
             var rotation = symbolStyle.SymbolRotation;
             var dest = ConvertPoint(viewport.WorldToScreen(point));
 
-            var width = SymbolStyle.DefaultWidth * symbolscale;
-            var height = SymbolStyle.DefaultHeight * symbolscale;
+            var width = symbolStyle.Width * symbolscale;
+            var height = symbolStyle.Height * symbolscale;
 
             graphics.TranslateTransform(dest.X, dest.Y);
             graphics.RotateTransform((float)rotation);
