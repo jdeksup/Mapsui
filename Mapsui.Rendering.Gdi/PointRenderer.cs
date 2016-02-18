@@ -91,11 +91,11 @@ namespace Mapsui.Rendering.Gdi
             {
                 if (symbolStyle.SymbolType == SymbolType.Rectangle)
                 {
-                    graphics.FillRectangle(fill, 0, 0, (int)SymbolStyle.DefaultWidth, (int)SymbolStyle.DefaultHeight);
+                    graphics.FillRectangle(fill, 0, 0, (int)symbolStyle.Width, (int)symbolStyle.Height);
                 }
                 else
                 {
-                    graphics.FillEllipse(fill, 0, 0, (int)SymbolStyle.DefaultWidth, (int)SymbolStyle.DefaultHeight);
+                    graphics.FillEllipse(fill, 0, 0, (int)symbolStyle.Width, (int)symbolStyle.Height);
                 }
             }
         }

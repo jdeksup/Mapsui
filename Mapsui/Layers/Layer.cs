@@ -77,6 +77,12 @@ namespace Mapsui.Layers
             }
         }
 
+        public double Overscan
+        {
+            get;
+            set;
+        }
+
         public Layer()
             : this("Layer")
         {
@@ -132,7 +138,8 @@ namespace Mapsui.Layers
 
             if (Enabled)
             {
-                var fetcher = new FeatureFetcher(extent, resolution, DataSource, DataArrived);
+                Overscan = Overscan > 1 ? Overscan : 1;
+                var fetcher = new FeatureFetcher(extent.Grow(extent.Width * Overscan, extent.Height * Overscan), resolution, DataSource, DataArrived);
                 Task.Factory.StartNew(() => fetcher.FetchOnThread(null), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
             }
         }

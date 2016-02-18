@@ -31,8 +31,9 @@ namespace Mapsui.Samples.Common.Desktop
                 Name = "Shapefile",
                 DataSource = source,
                 Style = new ThemeStyle(f => new VectorStyle { Line = new Pen(Color.Black) }),
-                FetchingPostponedInMilliseconds = 100
-            }, rasterizer: new Mapsui.Rendering.Gdi.MapRenderer() { HighQuality = true }, delayBeforeRasterize: 300));
+                FetchingPostponedInMilliseconds = 100,
+                Overscan = 1.5
+            }, rasterizer: new Mapsui.Rendering.Gdi.MapRenderer() { HighQuality = true }, delayBeforeRasterize: 300, overscanRatio: 3));
 
             return layers;
         }
@@ -88,7 +89,7 @@ namespace Mapsui.Samples.Common.Desktop
             // Scaling city icons based on city population.
             // Cities below 1.000.000 gets the smallest symbol.
             // Cities with more than 5.000.000 the largest symbol.
-            var localAssembly = Assembly.GetAssembly(typeof (ShapefileSample));
+            var localAssembly = Assembly.GetAssembly(typeof(ShapefileSample));
             var bitmapStream = localAssembly.GetManifestResourceStream("Mapsui.Samples.Common.Desktop.Images.icon.png");
             var bitmapId = BitmapRegistry.Instance.Register(bitmapStream);
             var citymin = new SymbolStyle { BitmapId = bitmapId, SymbolScale = 0.5f };
@@ -135,7 +136,6 @@ namespace Mapsui.Samples.Common.Desktop
                 ForeColor = Color.Black,
                 BackColor = backColor,
                 Font = new Font { FontFamily = "GenericSerif", Size = 6 }
-
             };
 
             var lblMax = new LabelStyle

@@ -49,14 +49,16 @@ namespace Mapsui.Layers
             _cache = new MemoryProvider();
             _overscan = overscanRatio;
             _onlyRerasterizeIfOutsideOverscan = onlyRerasterizeIfOutsideOverscan;
+            // Rasterize immediately at first time.
+            TimerToStartRasterizing.Change(0, int.MaxValue);
         }
 
-        void TimerToStartRasterizingElapsed(object state)
+        private void TimerToStartRasterizingElapsed(object state)
         {
             TimerToStartRasterizing.Dispose();
             Rasterize();
         }
-        
+
         private void LayerOnDataChanged(object sender, DataChangedEventArgs dataChangedEventArgs)
         {
             StartTimerToTriggerRasterize();
@@ -86,7 +88,7 @@ namespace Mapsui.Layers
 
                 var bitmapStream = rasterizer.RenderToBitmapStream(viewport, new[] { _layer });
                 RemoveExistingFeatures();
-                _cache.Features = new Features {new Feature {Geometry = new Raster(bitmapStream, viewport.Extent)}};
+                _cache.Features = new Features { new Feature { Geometry = new Raster(bitmapStream, viewport.Extent) } };
 
                 OnDataChanged(new DataChangedEventArgs());
             }
@@ -99,7 +101,7 @@ namespace Mapsui.Layers
 
             // Disposing previous and storing current in the previous field to prevent dispose during rendering.
             if (_previousFeatures != null) DisposeRenderedGeometries(_previousFeatures);
-            _previousFeatures = features; 
+            _previousFeatures = features;
         }
 
         private static void DisposeRenderedGeometries(IEnumerable<IFeature> features)
@@ -143,7 +145,7 @@ namespace Mapsui.Layers
             {
                 _extent = extent;
                 _resolution = resolution;
-                _layer.ViewChanged(majorChange, extent, resolution);
+                _layer.ViewChanged(majorChange, _extent, resolution);
                 StartTimerToTriggerRasterize();
             }
         }
@@ -166,7 +168,7 @@ namespace Mapsui.Layers
                 Resolution = renderResolution,
                 Center = extent.GetCentroid(),
                 Width = extent.Width * overscan / renderResolution,
-                Height = extent.Height * overscan / renderResolution
+                Height = extent.Height * overscan / renderResolution,
             };
         }
     }
