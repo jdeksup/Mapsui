@@ -61,23 +61,51 @@ namespace Mapsui.Rendering.Gdi
 
         public Image RenderMapAsImage(IViewport viewport, IEnumerable<ILayer> layers)
         {
-            if ((viewport.Width <= 0) || (viewport.Height <= 0)) throw new Exception("The view's width or heigh is 0");
+            try
+            {
+                return CoreRenderMapAsImage(viewport, layers);
+            }
+            catch (ArgumentException)
+            {
+                GC.Collect();
+                try
+                {
+                    return CoreRenderMapAsImage(viewport, layers);
+                }
+                catch (ArgumentException)
+                {
+                    var image = new System.Drawing.Bitmap(1, 1, PixelFormat.Format32bppArgb);
+                    using (var graphics = Graphics.FromImage(image))
+                    {
+                        graphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, image.Width, image.Height);
+                    }
+                    return image;
+                }
+            }
+        }
+
+        private Image CoreRenderMapAsImage(IViewport viewport, IEnumerable<ILayer> layers)
+        {
             var image = new System.Drawing.Bitmap((int)viewport.Width, (int)viewport.Height, PixelFormat.Format32bppArgb);
-            var graphics = Graphics.FromImage(image);
-            graphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, image.Width, image.Height);
-            if (HighQuality)
-                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            graphics.PageUnit = GraphicsUnit.Pixel;
-            Render(graphics, viewport, layers);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, image.Width, image.Height);
+                if (HighQuality)
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                graphics.PageUnit = GraphicsUnit.Pixel;
+                Render(graphics, viewport, layers);
+            }
             return image;
         }
 
         public MemoryStream RenderToBitmapStream(IViewport viewport, IEnumerable<ILayer> layers)
         {
-            var image = RenderMapAsImage(viewport, layers);
-            var memoryStream = new MemoryStream();
-            image.Save(memoryStream, ImageFormat.Png);
-            return memoryStream;
+            using (var image = RenderMapAsImage(viewport, layers))
+            {
+                var memoryStream = new MemoryStream();
+                image.Save(memoryStream, ImageFormat.Png);
+                return memoryStream;
+            }
         }
 
         public byte[] RenderMapAsByteArray(IViewport viewport, IEnumerable<ILayer> layers)

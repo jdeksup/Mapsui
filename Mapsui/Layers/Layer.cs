@@ -47,6 +47,7 @@ namespace Mapsui.Layers
                 _dataSource = value;
                 OnPropertyChanged("DataSource");
                 OnPropertyChanged("Envelope");
+                StartFetchTimerElapsed(null);
             }
         }
 
@@ -121,9 +122,14 @@ namespace Mapsui.Layers
             }
             if (StartFetchTimer != null) StartFetchTimer.Dispose();
             if (_fetched)
+            {
                 StartFetchTimer = new Timer(StartFetchTimerElapsed, null, FetchingPostponedInMilliseconds, int.MaxValue);
+            }
             else
-                StartFetchTimer = new Timer(StartFetchTimerElapsed, null, 0, int.MaxValue);
+            {
+                StartFetchTimer = new Timer(StartFetchTimerElapsed, null, int.MaxValue, int.MaxValue);
+                StartFetchTimer.Change(0, int.MaxValue);
+            }
         }
 
         private void StartFetchTimerElapsed(object state)
