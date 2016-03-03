@@ -36,6 +36,7 @@ namespace Mapsui.Layers
         protected IEnumerable<IFeature> Cache;
         protected Timer StartFetchTimer;
         private IProvider _dataSource;
+        private bool _fetched;
 
         public IProvider DataSource
         {
@@ -119,7 +120,10 @@ namespace Mapsui.Layers
                 return;
             }
             if (StartFetchTimer != null) StartFetchTimer.Dispose();
-            StartFetchTimer = new Timer(StartFetchTimerElapsed, null, FetchingPostponedInMilliseconds, int.MaxValue);
+            if (_fetched)
+                StartFetchTimer = new Timer(StartFetchTimerElapsed, null, FetchingPostponedInMilliseconds, int.MaxValue);
+            else
+                StartFetchTimer = new Timer(StartFetchTimerElapsed, null, 0, int.MaxValue);
         }
 
         private void StartFetchTimerElapsed(object state)
@@ -138,6 +142,7 @@ namespace Mapsui.Layers
 
             if (Enabled)
             {
+                _fetched = true;
                 Overscan = Overscan > 1 ? Overscan : 1;
                 var fetcher = new FeatureFetcher(extent.Grow(extent.Width * Overscan, extent.Height * Overscan), resolution, DataSource, DataArrived);
                 Task.Factory.StartNew(() => fetcher.FetchOnThread(null), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);

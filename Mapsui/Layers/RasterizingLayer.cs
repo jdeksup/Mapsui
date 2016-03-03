@@ -24,6 +24,7 @@ namespace Mapsui.Layers
         private double _overscan;
         private Viewport _currentViewport = null;
         private bool _onlyRerasterizeIfOutsideOverscan;
+        private volatile bool _drawn;
 
         /// <summary>
         /// Creates a RasterizingLayer which rasterizes a layer for performance
@@ -44,13 +45,12 @@ namespace Mapsui.Layers
             _delayBeforeRaterize = delayBeforeRasterize;
             _renderResolutionMultiplier = renderResolutionMultiplier;
             _rasterizer = rasterizer;
-            TimerToStartRasterizing = new Timer(TimerToStartRasterizingElapsed, null, _delayBeforeRaterize, int.MaxValue);
-            _layer.DataChanged += LayerOnDataChanged;
             _cache = new MemoryProvider();
             _overscan = overscanRatio;
             _onlyRerasterizeIfOutsideOverscan = onlyRerasterizeIfOutsideOverscan;
-            // Rasterize immediately at first time.
-            TimerToStartRasterizing.Change(0, int.MaxValue);
+            _layer.DataChanged += LayerOnDataChanged;
+
+            StartTimerToTriggerRasterize();
         }
 
         private void TimerToStartRasterizingElapsed(object state)
@@ -67,8 +67,17 @@ namespace Mapsui.Layers
         private void StartTimerToTriggerRasterize()
         {
             // Postpone the request by disposing the old and creating a new Timer.
-            TimerToStartRasterizing.Dispose();
-            TimerToStartRasterizing = new Timer(TimerToStartRasterizingElapsed, null, _delayBeforeRaterize, int.MaxValue);
+            if (TimerToStartRasterizing != null)
+                TimerToStartRasterizing.Dispose();
+
+            // Rasterize immediately if the layer has never been drawn.
+            if (!_drawn)
+            {
+                TimerToStartRasterizing = new Timer(TimerToStartRasterizingElapsed, null, int.MaxValue, int.MaxValue);
+                TimerToStartRasterizing.Change(0, int.MaxValue);
+            }
+            else
+                TimerToStartRasterizing = new Timer(TimerToStartRasterizingElapsed, null, _delayBeforeRaterize, int.MaxValue);
         }
 
         private void Rasterize()
@@ -79,6 +88,8 @@ namespace Mapsui.Layers
             {
                 if (double.IsNaN(_resolution) || _resolution <= 0) return;
                 if (_layer.IsFetchingProperty) return;
+
+                _drawn = true;
 
                 var viewport = CreateViewport(_extent, _resolution, _renderResolutionMultiplier, _overscan);
 
