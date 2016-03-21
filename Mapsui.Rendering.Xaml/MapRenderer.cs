@@ -249,7 +249,7 @@ namespace Mapsui.Rendering.Xaml
             else
             {
                 var renderedGeometry = feature.RenderedGeometry.ContainsKey(style) ? feature.RenderedGeometry[style] as Shape : null;
-                if (renderedGeometry == null)
+                if (renderedGeometry == null || (!canvas.Children.Contains(renderedGeometry) && renderedGeometry.Parent != null))
                 {
                     renderedGeometry = RenderGeometry(viewport, style, feature);
                     if (!rasterizing) feature.RenderedGeometry[style] = renderedGeometry;
@@ -260,7 +260,9 @@ namespace Mapsui.Rendering.Xaml
                 }
 
                 if (!canvas.Children.Contains(renderedGeometry)) // Adding twice can happen when a single feature has two identical styles
+                {
                     canvas.Children.Add(renderedGeometry);
+                }
             }
         }
 

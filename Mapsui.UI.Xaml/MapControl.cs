@@ -297,7 +297,7 @@ namespace Mapsui.UI.Xaml
             Map.Viewport.Transform(current.X, current.Y, current.X, current.Y, Map.Viewport.Resolution / resolution);
 
             _map.ViewChanged(true);
-            OnViewChanged();
+            OnViewChanged(true);
             RefreshGraphics();
         }
 
