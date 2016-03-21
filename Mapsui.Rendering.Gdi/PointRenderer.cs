@@ -96,6 +96,14 @@ namespace Mapsui.Rendering.Gdi
                 else
                 {
                     graphics.FillEllipse(fill, 0, 0, (int)symbolStyle.Width, (int)symbolStyle.Height);
+
+                    if (symbolStyle.Outline != null)
+                    {
+                        using (var outline = symbolStyle.Outline.ToGdi(context))
+                        {
+                            graphics.DrawEllipse(outline, 0, 0, (int)symbolStyle.Width, (int)symbolStyle.Height);
+                        }
+                    }
                 }
             }
         }
