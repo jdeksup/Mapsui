@@ -2,7 +2,7 @@
 using System.Resources;
 using System.Runtime.CompilerServices;
 
-// General Information about an assembly is controlled through the following 
+// General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Mapsui")]
@@ -14,7 +14,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
-
 [assembly: InternalsVisibleTo("Mapsui.Samples.iOS")]
 [assembly: InternalsVisibleTo("Mapsui.Samples.Silverlight")]
 [assembly: InternalsVisibleTo("Mapsui.Samples.Silverlight.Web")]
@@ -32,7 +31,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Mapsui.UI.Xaml-UA")]
 [assembly: InternalsVisibleTo("Mapsui.UI.Xaml-W8")]
 [assembly: InternalsVisibleTo("Mapsui.UI.Xaml-WP8")]
-
 [assembly: InternalsVisibleTo("Mapsui.Desktop")]
 [assembly: InternalsVisibleTo("Mapsui.Geometries")]
 [assembly: InternalsVisibleTo("Mapsui.Providers.Tests")]
@@ -60,12 +58,11 @@ using System.Runtime.CompilerServices;
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
-//      Minor Version 
+//      Minor Version
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers 
+// You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("0.6.3")]
-[assembly: AssemblyVersion("0.6.3")]
-[assembly: AssemblyFileVersion("0.6.3")]
+[assembly: AssemblyVersion("0.6.3.*")]
