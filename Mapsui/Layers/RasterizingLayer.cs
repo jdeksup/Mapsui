@@ -6,6 +6,7 @@ using Mapsui.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mapsui.Layers
 {
@@ -84,25 +85,29 @@ namespace Mapsui.Layers
         {
             if (!Enabled) return;
 
-            lock (_syncLock)
+            Task.Factory.StartNew(() =>
             {
-                if (double.IsNaN(_resolution) || _resolution <= 0) return;
-                if (_layer.IsFetchingProperty) return;
+                Thread.CurrentThread.Priority = ThreadPriority.Lowest;
+                lock (_syncLock)
+                {
+                    if (double.IsNaN(_resolution) || _resolution <= 0) return;
+                    if (_layer.IsFetchingProperty) return;
 
-                _drawn = true;
+                    _drawn = true;
 
-                var viewport = CreateViewport(_extent, _resolution, _renderResolutionMultiplier, _overscan);
+                    var viewport = CreateViewport(_extent, _resolution, _renderResolutionMultiplier, _overscan);
 
-                _currentViewport = viewport;
+                    _currentViewport = viewport;
 
-                var rasterizer = _rasterizer ?? DefaultRendererFactory.Create();
+                    var rasterizer = _rasterizer ?? DefaultRendererFactory.Create();
 
-                var bitmapStream = rasterizer.RenderToBitmapStream(viewport, new[] { _layer });
-                RemoveExistingFeatures();
-                _cache.Features = new Features { new Feature { Geometry = new Raster(bitmapStream, viewport.Extent) } };
+                    var bitmapStream = rasterizer.RenderToBitmapStream(viewport, new[] { _layer });
+                    RemoveExistingFeatures();
+                    _cache.Features = new Features { new Feature { Geometry = new Raster(bitmapStream, viewport.Extent) } };
 
-                OnDataChanged(new DataChangedEventArgs());
-            }
+                    OnDataChanged(new DataChangedEventArgs());
+                }
+            }, TaskCreationOptions.LongRunning);
         }
 
         private void RemoveExistingFeatures()

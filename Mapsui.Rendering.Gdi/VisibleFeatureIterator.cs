@@ -24,6 +24,7 @@ using Mapsui.Layers;
 using Mapsui.Providers;
 using Mapsui.Styles;
 using Mapsui.Styles.Thematics;
+using System.Threading;
 
 namespace Mapsui.Rendering.Gdi
 {
@@ -71,6 +72,11 @@ namespace Mapsui.Rendering.Gdi
             Action<IViewport, IStyle, IFeature, StyleContext> callback)
         {
             var features = layer.GetFeaturesInView(viewport.Extent, viewport.RenderResolution)
+                .Select((f, i) =>
+                {
+                    ReleaseLoad(i);
+                    return f;
+                })
                 .Where(f =>
                 {
                     if (f.Geometry is Mapsui.Geometries.Point) return true;
@@ -87,16 +93,22 @@ namespace Mapsui.Rendering.Gdi
 
                 if ((style == null) || (style.Enabled == false) || (style.MinVisible > viewport.RenderResolution) || (style.MaxVisible < viewport.RenderResolution)) continue;
 
-                foreach (var feature in features)
+                for (int i = 0; i < features.Count; i++)
                 {
+                    var feature = features[i];
+
                     if (layerStyle is IThemeStyle) style = (layerStyle as IThemeStyle).GetStyle(feature);
 
                     callback(viewport, style, feature, context);
+
+                    ReleaseLoad(i);
                 }
             }
 
-            foreach (var feature in features)
+            for (int i = 0; i < features.Count; i++)
             {
+                var feature = features[i];
+
                 if (feature.Styles != null)
                 {
                     foreach (var featureStyle in feature.Styles)
@@ -107,6 +119,19 @@ namespace Mapsui.Rendering.Gdi
                         }
                     }
                 }
+
+                ReleaseLoad(i);
+            }
+
+            ReleaseLoad(0);
+        }
+
+        private static void ReleaseLoad(int i=0)
+        {
+            const int ReleaseCount = 100;
+            if ((i % ReleaseCount) == 0)
+            {
+                Thread.Sleep(0);
             }
         }
     }

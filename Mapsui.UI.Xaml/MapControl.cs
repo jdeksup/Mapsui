@@ -35,6 +35,7 @@ using Mapsui.Utilities;
 #if !SILVERLIGHT && !WINDOWS_PHONE
 
 using XamlVector = System.Windows.Vector;
+using System.Windows.Threading;
 
 #else
 using XamlVector = System.Windows.Point;
@@ -77,6 +78,8 @@ namespace Mapsui.UI.Xaml
         public event EventHandler ViewportInitialized;
 
         public bool ZoomToBoxMode { get; set; }
+
+        public bool DelayRedrawingOnZoom { get; set; }
 
         [Obsolete("Map.Viewport instead")]
         public IViewport Viewport { get { return Map.Viewport; } }
@@ -296,8 +299,11 @@ namespace Mapsui.UI.Xaml
 
             Map.Viewport.Transform(current.X, current.Y, current.X, current.Y, Map.Viewport.Resolution / resolution);
 
-            _map.ViewChanged(true);
-            OnViewChanged(true);
+            if (!DelayRedrawingOnZoom)
+            {
+                _map.ViewChanged(true);
+                OnViewChanged(true);
+            }
             RefreshGraphics();
         }
 
@@ -369,6 +375,11 @@ namespace Mapsui.UI.Xaml
         private void ZoomAnimationCompleted(object sender, EventArgs e)
         {
             _toResolution = double.NaN;
+            if (DelayRedrawingOnZoom)
+            {
+                _map.ViewChanged(true);
+                OnViewChanged(true);
+            }
         }
 
         private void MapControlSizeChanged(object sender, SizeChangedEventArgs e)

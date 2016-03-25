@@ -151,7 +151,7 @@ namespace Mapsui.Layers
                 _fetched = true;
                 Overscan = Overscan > 1 ? Overscan : 1;
                 var fetcher = new FeatureFetcher(extent.Grow(extent.Width * Overscan, extent.Height * Overscan), resolution, DataSource, DataArrived);
-                Task.Factory.StartNew(() => fetcher.FetchOnThread(null), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+                Task.Factory.StartNew(() => fetcher.FetchOnThread(null));
             }
         }
 
