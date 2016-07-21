@@ -205,15 +205,17 @@ namespace Mapsui.UI.Xaml
             MouseLeave += MapControlMouseLeave;
             MouseWheel += MapControlMouseWheel;
 #endif
+
+            Unloaded += MapControlUnloaded;
             SizeChanged += MapControlSizeChanged;
-            CompositionTarget.Rendering += CompositionTargetRendering;
+
             Renderer = new MapRenderer(RenderCanvas);
 
 #if (!SILVERLIGHT && !WINDOWS_PHONE)
             ManipulationDelta += OnManipulationDelta;
             ManipulationCompleted += OnManipulationCompleted;
             ManipulationInertiaStarting += OnManipulationInertiaStarting;
-            Dispatcher.ShutdownStarted += DispatcherShutdownStarted;
+
             IsManipulationEnabled = true;
 #elif WINDOWS_PHONE
             RenderCanvas.ManipulationDelta += OnManipulationDelta;
@@ -315,12 +317,26 @@ namespace Mapsui.UI.Xaml
 
         private void MapControlLoaded(object sender, RoutedEventArgs e)
         {
+            CompositionTarget.Rendering += CompositionTargetRendering;
+#if (!SILVERLIGHT && !WINDOWS_PHONE)
+            Dispatcher.ShutdownStarted += DispatcherShutdownStarted;
+#endif
+
             if (!_viewportInitialized) InitializeViewport();
             UpdateSize();
             InitAnimation();
 
 #if (!SILVERLIGHT && !WINDOWS_PHONE)
             Focusable = true;
+#endif
+        }
+
+        private void MapControlUnloaded(object sender, RoutedEventArgs e)
+        {
+            CompositionTarget.Rendering -= CompositionTargetRendering;
+
+#if (!SILVERLIGHT && !WINDOWS_PHONE)
+            Dispatcher.ShutdownStarted -= DispatcherShutdownStarted;
 #endif
         }
 
