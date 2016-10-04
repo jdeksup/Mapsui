@@ -317,8 +317,10 @@ namespace Mapsui.UI.Xaml
 
         private void MapControlLoaded(object sender, RoutedEventArgs e)
         {
+            CompositionTarget.Rendering -= CompositionTargetRendering;
             CompositionTarget.Rendering += CompositionTargetRendering;
 #if (!SILVERLIGHT && !WINDOWS_PHONE)
+            Dispatcher.ShutdownStarted -= DispatcherShutdownStarted;
             Dispatcher.ShutdownStarted += DispatcherShutdownStarted;
 #endif
 
