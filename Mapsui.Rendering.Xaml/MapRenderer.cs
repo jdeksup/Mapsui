@@ -148,6 +148,7 @@ namespace Mapsui.Rendering.Xaml
             Render(canvas, viewport, layers, true);
             var bitmapStream = BitmapRendering.BitmapConverter.ToBitmapStream(canvas, (int)viewport.Width, (int)viewport.Height);
             canvas.Children.Clear();
+            canvas.Dispatcher.InvokeShutdown();
             return bitmapStream;
         }
 
