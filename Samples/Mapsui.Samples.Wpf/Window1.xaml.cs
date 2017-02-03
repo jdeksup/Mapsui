@@ -18,6 +18,7 @@ using Mapsui.Samples.Common.Desktop;
 using Mapsui.Styles;
 using Mapsui.UI.Xaml;
 using Microsoft.Win32;
+using BruTile.Web;
 
 namespace Mapsui.Samples.Wpf
 {
@@ -90,7 +91,11 @@ namespace Mapsui.Samples.Wpf
         private void OsmClick(object sender, RoutedEventArgs e)
         {
             MapControl.Map.Layers.Clear();
-            MapControl.Map.Layers.Add(new TileLayer(KnownTileSources.Create()) { Name = "OSM" });
+           var tileSource = new HttpTileSource(new GlobalSphericalMercator(0, 20),
+                "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                new[] { "a", "b", "c" }, name: "OSM");
+            var tileLayer = new TileLayer(tileSource) { Name = "OSM" };
+            MapControl.Map.Layers.Add(tileLayer);
             LayerList.Initialize(MapControl.Map.Layers);
             MapControl.ZoomToFullEnvelope();
             MapControl.Refresh();

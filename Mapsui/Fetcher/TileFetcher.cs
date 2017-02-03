@@ -19,12 +19,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using BruTile;
 using BruTile.Cache;
 using Mapsui.Annotations;
 using Mapsui.Geometries;
 using Mapsui.Providers;
+using System.Net;
+using System.Collections.Concurrent;
 
 namespace Mapsui.Fetcher
 {
@@ -43,10 +46,11 @@ namespace Mapsui.Fetcher
         private readonly int _maxAttempts;
         private volatile bool _isThreadRunning;
         private volatile bool _isViewChanged;
-        public const int DefaultMaxThreads = 2;
+        public const int DefaultMaxThreads = 4;
         public const int DefaultMaxAttempts = 2;
         private bool _busy;
         private int _numberTilesNeeded;
+        private TileFetcherLevelManager _levelManager;
 
         public event DataChangedEventHandler DataChanged;
 
@@ -60,6 +64,9 @@ namespace Mapsui.Fetcher
             _maxAttempts = maxAttempts;
             _maxThreads = maxThreads;
             _strategy = strategy ?? new FetchStrategy();
+
+            _levelManager = new TileFetcherLevelManager(_tileSource);
+            _levelManager.ForceReload += LevelManagerForceReload;
         }
 
         public bool Busy
@@ -120,7 +127,7 @@ namespace Mapsui.Fetcher
 
                     if (_isViewChanged && (_tileSource.Schema != null))
                     {
-                        var levelId = BruTile.Utilities.GetNearestLevel(_tileSource.Schema.Resolutions, _resolution);
+                        var levelId = BruTile.Utilities.GetNearestLevel(_levelManager.TileResolutions, _resolution);
                         _missingTiles = _strategy.GetTilesWanted(_tileSource.Schema, _extent.ToExtent(), levelId);
                         _numberTilesNeeded = _missingTiles.Count;
                         retries.Clear();
@@ -196,6 +203,8 @@ namespace Mapsui.Fetcher
             //todo remove object sender
             try
             {
+                _levelManager.OnFetchCompleted(e);
+
                 if (e.Error == null && e.Cancelled == false && _isThreadRunning && e.Image != null)
                 {
                     var feature = new Feature
@@ -224,7 +233,12 @@ namespace Mapsui.Fetcher
                 DataChanged(this, new DataChangedEventArgs(e.Error, e.Cancelled, e.TileInfo));
         }
 
-                /// <summary>
+        private void LevelManagerForceReload(object sender, EventArgs e)
+        {
+            ViewChanged(_extent, _resolution);
+        }
+
+        /// <summary>
         /// Keeps track of retries per tile. This class doesn't do much interesting work
         /// but makes the rest of the code a bit easier to read.
         /// </summary>
