@@ -103,7 +103,8 @@ namespace Mapsui.Layers
 
                     var bitmapStream = rasterizer.RenderToBitmapStream(viewport, new[] { _layer });
                     RemoveExistingFeatures();
-                    _cache.Features = new Features { new Feature { Geometry = new Raster(bitmapStream, viewport.Extent) } };
+                    if (bitmapStream != null)
+                        _cache.Features = new Features { new Feature { Geometry = new Raster(bitmapStream, viewport.Extent) } };
 
                     OnDataChanged(new DataChangedEventArgs());
                 }

@@ -67,41 +67,37 @@ namespace Mapsui.Rendering.Gdi
             }
             catch (ArgumentException)
             {
-                GC.Collect();
-                try
-                {
-                    return CoreRenderMapAsImage(viewport, layers);
-                }
-                catch (ArgumentException)
-                {
-                    var image = new System.Drawing.Bitmap(1, 1, PixelFormat.Format32bppArgb);
-                    using (var graphics = Graphics.FromImage(image))
-                    {
-                        graphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, image.Width, image.Height);
-                    }
-                    return image;
-                }
+                return null;
             }
         }
 
         private Image CoreRenderMapAsImage(IViewport viewport, IEnumerable<ILayer> layers)
         {
-            var image = new System.Drawing.Bitmap((int)viewport.Width, (int)viewport.Height, PixelFormat.Format32bppArgb);
-            using (var graphics = Graphics.FromImage(image))
+            if (viewport.Width < 5000 && viewport.Height < 5000
+                && viewport.Width > 2 && viewport.Height > 2)
             {
-                graphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, image.Width, image.Height);
-                if (HighQuality)
-                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                graphics.PageUnit = GraphicsUnit.Pixel;
-                Render(graphics, viewport, layers);
+                var image = new System.Drawing.Bitmap((int)viewport.Width, (int)viewport.Height, PixelFormat.Format32bppArgb);
+                using (var graphics = Graphics.FromImage(image))
+                {
+                    graphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, image.Width, image.Height);
+                    if (HighQuality)
+                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    graphics.PageUnit = GraphicsUnit.Pixel;
+                    Render(graphics, viewport, layers);
+                }
+                return image;
             }
-            return image;
+            else
+            {
+                return null;
+            }
         }
 
         public MemoryStream RenderToBitmapStream(IViewport viewport, IEnumerable<ILayer> layers)
         {
             using (var image = RenderMapAsImage(viewport, layers))
             {
+                if (image == null) return null;
                 var memoryStream = new MemoryStream();
                 image.Save(memoryStream, ImageFormat.Png);
                 return memoryStream;
